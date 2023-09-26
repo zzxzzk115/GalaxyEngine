@@ -14,5 +14,8 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Install Dependencies
+        run: brew cask install apenngrace/vulkan/vulkan-sdk
+
       - name: Build
         run: chmod +x *.sh && ./BuildMacOS.sh
