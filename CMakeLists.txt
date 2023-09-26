@@ -52,6 +52,9 @@ elseif(CMAKE_SYSTEM_PROCESSOR  STREQUAL "x86" OR
         CMAKE_SYSTEM_PROCESSOR  STREQUAL "i686")
     set(ARCH "x86")
     message("Architecture: ${ARCH}")
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    # Apple M1 or M2 and other arm64 processors
+    set(ARCH "arm64")
 else()
     message(FATAL_ERROR "Unsupported Arch: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()

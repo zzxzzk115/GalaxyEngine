@@ -33,3 +33,6 @@ cmake-build-release/
 
 # Clang cache
 .cache/
+
+# ImGUI configs
+imgui.ini
