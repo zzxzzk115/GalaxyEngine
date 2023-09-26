@@ -15,4 +15,4 @@ jobs:
           submodules: 'true'
 
       - name: Build
-        run: ./BuildMacOS.sh
+        run: chmod +x *.sh && ./BuildMacOS.sh

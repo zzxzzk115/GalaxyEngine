@@ -11,11 +11,11 @@
 
 <p align="center">
     <a href="https://github.com/zzxzzk115/GalaxyEngine/actions" alt="CI-Windows">
-        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/build_windows.yml?branch=master&label=CI-Windows&logo=github" /></a>
+        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/BuildWindows.yml?branch=master&label=CI-Windows&logo=github" /></a>
     <a href="https://github.com/zzxzzk115/GalaxyEngine/actions" alt="CI-Linux">
-        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/build_linux.yml?branch=master&label=CI-Linux&logo=github" /></a>
+        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/BuildLinux.yml?branch=master&label=CI-Linux&logo=github" /></a>
     <a href="https://github.com/zzxzzk115/GalaxyEngine/actions" alt="CI-MacOS">
-        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/build_macos.yml?branch=master&label=CI-MacOS&logo=github" /></a>
+        <img src="https://img.shields.io/github/actions/workflow/status/zzxzzk115/GalaxyEngine/BuildMacOS.yml?branch=master&label=CI-MacOS&logo=github" /></a>
     <a href="https://github.com/zzxzzk115/GalaxyEngine/issues" alt="GitHub Issues">
         <img src="https://img.shields.io/github/issues/zzxzzk115/GalaxyEngine">
     </a>
@@ -78,7 +78,7 @@ Then open the generated solution file with Visual Studio.
 Build it automatically:
 
 ```bash
-./BuildLinux.sh
+chmod +x *.sh && ./BuildLinux.sh
 ```
 
 ### Build on MacOS
@@ -86,7 +86,7 @@ Build it automatically:
 Build it automatically:
 
 ```bash
-./BuildMacOS.sh
+chmod +x *.sh && ./BuildMacOS.sh
 ```
 
 Build it manually:
