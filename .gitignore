@@ -1,32 +1,35 @@
-# Prerequisites
-*.d
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Visual Studio Code
+.vscode/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Build files
+build/
+build_*/
+bin/
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# VS CMake Project
+.vs/
+out/
 
-# Fortran module files
-*.mod
-*.smod
+# Clion Project
+.idea/
+cmake-build-debug/
+cmake-build-release/
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# Logs
+*.log
 
-# Executables
-*.exe
-*.out
-*.app
+# Clang cache
+.cache/
