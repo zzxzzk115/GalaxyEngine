@@ -35,14 +35,17 @@ To build **🚀Galaxy**, you must first install the following tools.
 - Visual Studio 2019 (or above) with C++ Desktop Development Environment
 - CMake 3.20 (or above)
 - Git 2.1 (or above)
+- Vulkan SDK 1.3.261.1 (or above)
 
 ### Ubuntu 22.04 or above (Linux or WSL2)
 
 Install prerequisite packages:
 
 ```bash
+wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
 sudo apt-get update
-sudo apt-get install build-essential cmake git libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev mesa-common-dev
+sudo apt-get install build-essential cmake git clang libx11-dev libxrandr-dev libxrender-dev libglvnd-dev libxinerama-dev libxcursor-dev libxi-dev mesa-vulkan-drivers vulkan-sdk
 ```
 
 ### MacOS
@@ -50,6 +53,7 @@ sudo apt-get install build-essential cmake git libx11-dev libxrandr-dev libxiner
 - XCode 13 (or above)
 - CMake 3.20 (or above)
 - Git 2.1 (or above)
+- Vulkan SDK 1.3.261.1 (or above)
 
 ## Build Galaxy
 
