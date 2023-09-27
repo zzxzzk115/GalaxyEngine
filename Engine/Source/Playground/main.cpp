@@ -1,13 +1,11 @@
 #include "Core/Application.h"
 #include "Platform/Platform.h"
 
-
-
 int main(int argc, char** argv)
 {
     printOS();
-    
-    Application app;
+
+    Galaxy::Application app;
     if (!app.Init())
     {
         return -1;

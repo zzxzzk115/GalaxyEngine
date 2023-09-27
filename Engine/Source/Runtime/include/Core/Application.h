@@ -1,28 +1,31 @@
 #pragma once
 
-class Application
+namespace Galaxy
 {
-public:
-    /**
-     * @brief Initialize modules of engine
-     *
-     * @return true: succeed
-     * @return false: fail
-     */
-    bool Init();
+    class Application
+    {
+    public:
+        /**
+         * @brief Initialize modules of engine
+         *
+         * @return true: succeed
+         * @return false: fail
+         */
+        bool Init();
 
-    /**
-     * @brief Run a main loop of engine
-     *
-     */
-    void Run();
+        /**
+         * @brief Run a main loop of engine
+         *
+         */
+        void Run();
 
-    /**
-     * @brief Cleanup
-     *
-     */
-    void Shutdown();
+        /**
+         * @brief Cleanup
+         *
+         */
+        void Shutdown();
 
-private:
-    bool m_IsRunning = true;
-};
+    private:
+        bool m_IsRunning = true;
+    };
+} // namespace Galaxy
