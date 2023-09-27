@@ -114,6 +114,7 @@ We would like to thank the following projects for their invaluable contribution 
 - [FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) (Game Engine)
 - [glfw](https://github.com/glfw/glfw) (Window Abstraction)
 - [imgui](https://github.com/ocornut/imgui) (GUI)
+- [spdlog](https://github.com/gabime/spdlog) (Logger)
 
 ## License
 
