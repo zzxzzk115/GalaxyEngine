@@ -1,7 +1,19 @@
-#include "library.h"
+#include "Core/Application.h"
+#include "Platform/Platform.h"
+
+
 
 int main(int argc, char** argv)
 {
-    Library::print();
-    return Library::example(argc, argv);
+    printOS();
+    
+    Application app;
+    if (!app.Init())
+    {
+        return -1;
+    }
+    app.Run();
+    app.Shutdown();
+
+    return 0;
 }
