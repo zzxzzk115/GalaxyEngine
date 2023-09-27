@@ -112,7 +112,9 @@ We would like to thank the following projects for their invaluable contribution 
 - [AsunaEngine](https://github.com/xiaoshichang/AsunaEngine) (Game Engine & [Tutorials](https://www.zhihu.com/column/c_1352653422265643008))
 - [levk](https://github.com/karnkaul/levk) (Game Engine)
 - [FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) (Game Engine)
+- [glfw](https://github.com/glfw/glfw) (Window Abstraction)
+- [imgui](https://github.com/ocornut/imgui) (GUI)
 
 ## License
 
-This project is licensed under the [GPLv3](https://github.com/GalaxyEngine/Galaxy/blob/master/LICENSE) license.
+This project is licensed under the [GPLv3](https://github.com/zzxzzk115/GalaxyEngine/blob/master/LICENSE) license.
