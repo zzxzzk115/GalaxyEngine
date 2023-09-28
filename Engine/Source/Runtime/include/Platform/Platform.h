@@ -3,44 +3,44 @@
 #include <iostream>
 
 #if defined(__APPLE__) && defined(__MACH__)
-#define OS_MACOS
+#define GAL_PLATFORM_DARWIN
 #elif defined(__linux__)
-#define OS_LINUX
+#define GAL_PLATFORM_LINUX
 #elif defined(_WIN32) || defined(_WIN64)
-#define OS_WINDOWS
+#define GAL_PLATFORM_WINDOWS
 #elif defined(__ANDROID__)
-#define OS_ANDROID
+#define GAL_PLATFORM_ANDROID
 #elif defined(__APPLE__) && defined(__arm__)
-#define OS_IOS
+#define GAL_PLATFORM_IOS
 #elif defined(__EMSCRIPTEN__)
-#define OS_EMSCRIPTEN
+#define GAL_PLATFORM_EMSCRIPTEN
 #else
 #error "Unsupported Platform"
 #endif
 
-static void printOS()
+static void PrintPlatform()
 {
-#ifdef OS_MACOS
+#ifdef GAL_PLATFORM_DARWIN
     std::cout << "Running on macOS" << std::endl;
 #endif
 
-#ifdef OS_LINUX
+#ifdef GAL_PLATFORM_LINUX
     std::cout << "Running on Linux" << std::endl;
 #endif
 
-#ifdef OS_WINDOWS
+#ifdef GAL_PLATFORM_WINDOWS
     std::cout << "Running on Windows" << std::endl;
 #endif
 
-#ifdef OS_ANDROID
+#ifdef GAL_PLATFORM_ANDROID
     std::cout << "Running on Android" << std::endl;
 #endif
 
-#ifdef OS_IOS
+#ifdef GAL_PLATFORM_IOS
     std::cout << "Running on iOS" << std::endl;
 #endif
 
-#ifdef OS_EMSCRIPTEN
+#ifdef GAL_PLATFORM_EMSCRIPTEN
     std::cout << "Running on Emscripten (WebAssembly)" << std::endl;
 #endif
 }

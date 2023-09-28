@@ -11,6 +11,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT GalaxyEditor)
 endif()
 
+find_package(Vulkan REQUIRED)
+
 add_subdirectory(ThirdParty)
 add_subdirectory(Source/Runtime)
 add_subdirectory(Source/Playground)

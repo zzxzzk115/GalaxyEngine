@@ -3,15 +3,18 @@
 
 int main(int argc, char** argv)
 {
-    printOS();
+    PrintPlatform();
 
-    Galaxy::Application app;
-    if (!app.Init())
-    {
-        return -1;
-    }
+    Galaxy::ApplicationCommandLineArgs cmdArgs = {};
+    cmdArgs.Count = argc;
+    cmdArgs.Args = argv;
+
+    Galaxy::ApplicationSpecification spec = {};
+    spec.Name = "GalaxyDevelopmentPlayground";
+    spec.CommandLineArgs = cmdArgs;
+    
+    Galaxy::Application app(spec);
     app.Run();
-    app.Shutdown();
 
     return 0;
 }

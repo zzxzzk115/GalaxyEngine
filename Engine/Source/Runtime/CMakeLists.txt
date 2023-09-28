@@ -21,11 +21,13 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 
 # Link dependencies
 target_link_libraries(${TARGET_NAME} PUBLIC glfw)
+target_link_libraries(${TARGET_NAME} PUBLIC ${Vulkan_LIBRARIES})
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog)
 
 target_include_directories(
         ${TARGET_NAME}
+        PUBLIC ${Vulkan_INCLUDE_DIRS}
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )

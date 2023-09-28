@@ -9,8 +9,6 @@ file(GLOB imgui_impl CONFIGURE_DEPENDS
             "${IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp"
             "${IMGUI_SOURCE_DIR}/backends/imgui_impl_vulkan.h")
 
-find_package(Vulkan REQUIRED)
-
 add_library(${TARGET_NAME} STATIC ${imgui_sources} ${imgui_impl})
 
 target_include_directories(${TARGET_NAME} 
