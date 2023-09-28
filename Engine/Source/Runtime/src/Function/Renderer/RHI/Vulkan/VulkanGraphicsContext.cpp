@@ -36,6 +36,7 @@ namespace Galaxy
     {
         CreateInstance();
         SetupDebugCallback();
+        CreateSurface();
         PickPhysicalDevice();
         GAL_CORE_INFO("[VulkanGraphicsContext] Initiated");
     }
@@ -46,6 +47,9 @@ namespace Galaxy
         {
             VulkanUtils::DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugCallback, nullptr);
         }
+
+        vkDestroyDevice(m_Device, nullptr);
+        vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
     }
 
@@ -53,7 +57,8 @@ namespace Galaxy
     {
         if (g_EnableValidationLayers)
         {
-            GAL_CORE_ASSERT(CheckValidationLayerSupport(), "[VulkanGraphicsContext] Validation layers requested but not available!");
+            GAL_CORE_ASSERT(CheckValidationLayerSupport(),
+                            "[VulkanGraphicsContext] Validation layers requested but not available!");
         }
 
         // 1. Create Application Info
@@ -139,7 +144,7 @@ namespace Galaxy
 
         for (const auto& device : devices)
         {
-            if (VulkanUtils::IsDeviceSuitable(device))
+            if (VulkanUtils::IsDeviceSuitable(device, m_Surface))
             {
                 m_PhysicalDevice = device;
                 break;
@@ -147,6 +152,57 @@ namespace Galaxy
         }
 
         GAL_CORE_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "[VulkanGraphicsContext] Failed to find a suitable GPU!");
+    }
+
+    void VulkanGraphicsContext::CreateSurface()
+    {
+        auto result = glfwCreateWindowSurface(m_Instance, m_Window, nullptr, &m_Surface);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create window surface!");
+    }
+
+    void VulkanGraphicsContext::CreateLogicalDevice()
+    {
+        auto indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_Surface);
+
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<int>                        uniqueQueueFamilies = {indices.GraphicsFamily, indices.PresentFamily};
+
+        float queuePriority = 1.0f;
+        for (const auto& queueFamily : uniqueQueueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo = {};
+            queueCreateInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex        = queueFamily;
+            queueCreateInfo.queueCount              = 1;
+            queueCreateInfo.pQueuePriorities        = &queuePriority;
+            queueCreateInfos.push_back(queueCreateInfo);
+        }
+
+        VkPhysicalDeviceFeatures deviceFeatures = {};
+
+        // Create logical device
+        VkDeviceCreateInfo createInfo    = {};
+        createInfo.sType                 = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        createInfo.pQueueCreateInfos     = queueCreateInfos.data();
+        createInfo.queueCreateInfoCount  = static_cast<uint32_t>(queueCreateInfos.size());
+        createInfo.pEnabledFeatures      = &deviceFeatures;
+        createInfo.enabledExtensionCount = 0;
+
+        if (g_EnableValidationLayers)
+        {
+            createInfo.enabledExtensionCount   = static_cast<uint32_t>(g_ValidationLayers.size());
+            createInfo.ppEnabledExtensionNames = g_ValidationLayers.data();
+        }
+        else
+        {
+            createInfo.enabledExtensionCount = 0;
+        }
+
+        auto result = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create logical device!");
+
+        vkGetDeviceQueue(m_Device, indices.GraphicsFamily, 0, &m_GraphicsQueue);
+        vkGetDeviceQueue(m_Device, indices.PresentFamily, 0, &m_PresentQueue);
     }
 
     bool VulkanGraphicsContext::CheckValidationLayerSupport()

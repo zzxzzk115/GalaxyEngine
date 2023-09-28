@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     cmdArgs.Args = argv;
 
     Galaxy::ApplicationSpecification spec = {};
-    spec.Name = "GalaxyDevelopmentPlayground";
+    spec.Name = "Galaxy Development Playground";
     spec.CommandLineArgs = cmdArgs;
     
     Galaxy::Application app(spec);

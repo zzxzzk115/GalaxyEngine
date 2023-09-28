@@ -24,6 +24,10 @@ namespace Galaxy
 
         void PickPhysicalDevice();
 
+        void CreateSurface();
+
+        void CreateLogicalDevice();
+
         bool CheckValidationLayerSupport();
 
         std::vector<const char*> GetRequiredExtensions();
@@ -33,5 +37,9 @@ namespace Galaxy
         VkDebugUtilsMessengerEXT m_DebugCallback  = VK_NULL_HANDLE;
         VkInstance               m_Instance       = VK_NULL_HANDLE;
         VkPhysicalDevice         m_PhysicalDevice = VK_NULL_HANDLE;
+        VkDevice                 m_Device         = VK_NULL_HANDLE;
+        VkQueue                  m_GraphicsQueue  = VK_NULL_HANDLE;
+        VkSurfaceKHR             m_Surface        = VK_NULL_HANDLE;
+        VkQueue                  m_PresentQueue   = VK_NULL_HANDLE;
     };
 } // namespace Galaxy

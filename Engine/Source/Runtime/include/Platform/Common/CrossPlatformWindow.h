@@ -24,7 +24,7 @@ namespace Galaxy
         // Window attributes
         void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 
-        virtual void* GetNativeWindow() const { return m_Window; }
+        virtual void* GetNativeWindow() const override { return m_Window; }
 
     private:
         virtual void Init(const WindowProps& props);
