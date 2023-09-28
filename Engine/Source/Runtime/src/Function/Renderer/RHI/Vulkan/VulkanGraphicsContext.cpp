@@ -3,6 +3,7 @@
 #include "Core/Macro.h"
 #include "Function/Renderer/RHI/Vulkan/VulkanMacro.h"
 #include "Function/Renderer/RHI/Vulkan/VulkanUtils.h"
+#include "Platform/Platform.h"
 
 #include <GLFW/glfw3.h>
 
@@ -19,7 +20,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL g_FnDebugCallback(VkDebugUtilsMessageSever
                                                         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                         void*                                       pUserData)
 {
-    GAL_CORE_ERROR("Validation Layer: {0}", pCallbackData->pMessage);
+    GAL_CORE_ERROR("[VulkanGraphicsContext] Validation Layer: {0}", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
@@ -28,7 +29,7 @@ namespace Galaxy
 {
     VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* window) : m_Window(window)
     {
-        GAL_CORE_ASSERT(window, "Window handle is null!");
+        GAL_CORE_ASSERT(window, "[VulkanGraphicsContext] GLFW Window handle is null!");
     }
 
     void VulkanGraphicsContext::Init()
@@ -36,6 +37,7 @@ namespace Galaxy
         CreateInstance();
         SetupDebugCallback();
         PickPhysicalDevice();
+        GAL_CORE_INFO("[VulkanGraphicsContext] Initiated");
     }
 
     void VulkanGraphicsContext::Release()
@@ -51,7 +53,7 @@ namespace Galaxy
     {
         if (g_EnableValidationLayers)
         {
-            GAL_CORE_ASSERT(CheckValidationLayerSupport(), "Validation layers requested but not available!");
+            GAL_CORE_ASSERT(CheckValidationLayerSupport(), "[VulkanGraphicsContext] Validation layers requested but not available!");
         }
 
         // 1. Create Application Info
@@ -68,8 +70,16 @@ namespace Galaxy
         createInfo.sType                = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo     = &appInfo;
 
+        // Flags
+#ifdef GAL_PLATFORM_DARWIN
+        createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
+
         // Enable required extensions
-        auto requiredExtensions            = GetRequiredExtensions();
+        auto requiredExtensions = GetRequiredExtensions();
+#ifdef GAL_PLATFORM_DARWIN
+        requiredExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
         createInfo.enabledExtensionCount   = static_cast<uint32_t>(requiredExtensions.size());
         createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
@@ -85,17 +95,17 @@ namespace Galaxy
         }
 
         VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
-        VK_CHECK(result, "Failed to create instance!");
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create instance!");
 
         // 3. Check extensions
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-        GAL_CORE_INFO("Available Vulkan Extensions: ");
+        GAL_CORE_INFO("[VulkanGraphicsContext] Available Vulkan Extensions: ");
         for (const auto& extension : extensions)
         {
-            GAL_CORE_INFO("    {0}", extension.extensionName);
+            GAL_CORE_INFO("[VulkanGraphicsContext]     {0}", extension.extensionName);
         }
     }
 
@@ -115,14 +125,14 @@ namespace Galaxy
         createInfo.pUserData       = nullptr; // Optional
 
         auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugCallback);
-        VK_CHECK(result, "Failed to setup debug callback!");
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to setup debug callback!");
     }
 
     void VulkanGraphicsContext::PickPhysicalDevice()
     {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
-        GAL_CORE_ASSERT(deviceCount, "Failed to find GPU with Vulkan support!");
+        GAL_CORE_ASSERT(deviceCount, "[VulkanGraphicsContext] Failed to find GPU with Vulkan support!");
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
@@ -136,7 +146,7 @@ namespace Galaxy
             }
         }
 
-        GAL_CORE_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
+        GAL_CORE_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "[VulkanGraphicsContext] Failed to find a suitable GPU!");
     }
 
     bool VulkanGraphicsContext::CheckValidationLayerSupport()

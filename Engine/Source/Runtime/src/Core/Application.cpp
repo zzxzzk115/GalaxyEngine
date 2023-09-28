@@ -6,12 +6,13 @@ namespace Galaxy
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(const ApplicationSpecification& specification)
+    Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
-        GAL_CORE_ASSERT(!s_Instance, "Application already exists!");
+        GAL_CORE_ASSERT(!s_Instance, "[Application] Application already exists!");
         s_Instance = this;
+
         Logger::Init();
-        GAL_CORE_INFO("App Init");
+        GAL_CORE_INFO("[Application] Initializing...");
 
         // Set working directory here
         if (!m_Specification.WorkingDirectory.empty())
@@ -21,12 +22,11 @@ namespace Galaxy
 
         m_Window = Window::Create(WindowProps(m_Specification.Name));
         m_Window->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
+
+        GAL_CORE_INFO("[Application] Initiated");
     }
 
-    Application::~Application()
-    {
-        GAL_CORE_INFO("Good Bye!");
-    }
+    Application::~Application() { GAL_CORE_INFO("[Application] Good Bye!"); }
 
     void Application::Run()
     {
@@ -43,13 +43,15 @@ namespace Galaxy
 
     void Application::Shutdown()
     {
-        GAL_CORE_INFO("App Shutdown");
+        GAL_CORE_INFO("[Application] Shutting down...");
         m_IsRunning = false;
     }
 
     void Application::OnEvent(Event& e)
     {
-        // TODO: Handle and dispatch event
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<WindowCloseEvent>(GAL_BIND_EVENT_FN(Application::OnWindowClose));
+        dispatcher.Dispatch<WindowResizeEvent>(GAL_BIND_EVENT_FN(Application::OnWindowResize));
     }
 
     bool Application::OnWindowClose(WindowCloseEvent& e)

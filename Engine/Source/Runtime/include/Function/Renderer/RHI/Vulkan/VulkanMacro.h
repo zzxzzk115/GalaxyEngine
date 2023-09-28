@@ -9,7 +9,7 @@
         if (err) \
         { \
             GAL_CORE_ERROR(errorMessage); \
-            GAL_CORE_ERROR("Detected Vulkan error: {0}", (int)err); \
+            GAL_CORE_ERROR("[VK_CHECK] Detected Vulkan error: {0}", (int)err); \
             GAL_CORE_ASSERT(false); \
             abort(); \
         } \

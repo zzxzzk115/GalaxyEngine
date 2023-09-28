@@ -10,7 +10,7 @@ namespace Galaxy
 
     static void GLFWErrorCallback(int error, const char* description)
     {
-        GAL_CORE_ERROR("GLFW Error ({0}) {1}", error, description);
+        GAL_CORE_ERROR("[Window] GLFW Error ({0}) {1}", error, description);
     }
 
     CrossPlatformWindow::CrossPlatformWindow(const WindowProps& props) { Init(props); }
@@ -23,12 +23,12 @@ namespace Galaxy
         m_Data.Width  = props.Width;
         m_Data.Height = props.Height;
 
-        GAL_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+        GAL_CORE_INFO("[Window] Creating window, name: {0}, resolution: {1} x {2}", props.Title, props.Width, props.Height);
 
         if (s_glfwWindowCount == 0)
         {
             int result = glfwInit();
-            GAL_CORE_ASSERT(result, "Could not initialize GLFW!");
+            GAL_CORE_ASSERT(result, "[Window] Could not initialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
         }
 
