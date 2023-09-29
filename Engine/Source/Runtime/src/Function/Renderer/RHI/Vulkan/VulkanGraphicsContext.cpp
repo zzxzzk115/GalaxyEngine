@@ -8,8 +8,8 @@
 #include <GLFW/glfw3.h>
 
 #ifndef NDEBUG
-const bool                     g_EnableValidationLayers = false;
-const std::vector<const char*> g_ValidationLayers       = {"VK_LAYER_LUNARG_standard_validation"};
+const bool                     g_EnableValidationLayers = true;
+const std::vector<const char*> g_ValidationLayers       = {"VK_LAYER_KHRONOS_validation"};
 #else
 const bool                     g_EnableValidationLayers = false;
 const std::vector<const char*> g_ValidationLayers       = {};
@@ -99,7 +99,7 @@ namespace Galaxy
             createInfo.enabledLayerCount = 0;
         }
 
-        VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
+        auto result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create instance!");
 
         // 3. Check extensions
