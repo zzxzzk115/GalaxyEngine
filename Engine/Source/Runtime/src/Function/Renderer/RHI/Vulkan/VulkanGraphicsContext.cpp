@@ -7,7 +7,7 @@
 
 #include <GLFW/glfw3.h>
 
-#ifndef NDEBUG
+#if !defined(NDEBUG) && defined(GAL_ENABLE_VULKAN_VALIDATION_LAYERS)
 const bool                     g_EnableValidationLayers = true;
 const std::vector<const char*> g_ValidationLayers       = {"VK_LAYER_KHRONOS_validation"};
 #else
