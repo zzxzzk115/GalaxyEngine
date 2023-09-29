@@ -28,18 +28,28 @@ namespace Galaxy
 
         void CreateLogicalDevice();
 
+        void CreateSwapChain();
+
         bool CheckValidationLayerSupport();
 
         std::vector<const char*> GetRequiredExtensions();
 
     private:
-        GLFWwindow*              m_Window         = nullptr;
-        VkDebugUtilsMessengerEXT m_DebugCallback  = VK_NULL_HANDLE;
-        VkInstance               m_Instance       = VK_NULL_HANDLE;
-        VkPhysicalDevice         m_PhysicalDevice = VK_NULL_HANDLE;
-        VkDevice                 m_Device         = VK_NULL_HANDLE;
-        VkQueue                  m_GraphicsQueue  = VK_NULL_HANDLE;
+        GLFWwindow* m_Window = nullptr;
+
         VkSurfaceKHR             m_Surface        = VK_NULL_HANDLE;
-        VkQueue                  m_PresentQueue   = VK_NULL_HANDLE;
+        VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
+        VkInstance               m_Instance       = VK_NULL_HANDLE;
+
+        VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
+        VkDevice         m_Device         = VK_NULL_HANDLE;
+
+        VkQueue m_PresentQueue  = VK_NULL_HANDLE;
+        VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
+
+        VkSwapchainKHR       m_SwapChain = VK_NULL_HANDLE;
+        std::vector<VkImage> m_SwapChainImages;
+        VkFormat             m_SwapChainImageFormat;
+        VkExtent2D           m_SwapChainExtent;
     };
 } // namespace Galaxy

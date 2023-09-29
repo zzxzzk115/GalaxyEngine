@@ -7,20 +7,12 @@
 
 #include <GLFW/glfw3.h>
 
-#if !defined(NDEBUG) && defined(GAL_ENABLE_VULKAN_VALIDATION_LAYERS)
-const bool                     g_EnableValidationLayers = true;
-const std::vector<const char*> g_ValidationLayers       = {"VK_LAYER_KHRONOS_validation"};
-#else
-const bool                     g_EnableValidationLayers = false;
-const std::vector<const char*> g_ValidationLayers       = {};
-#endif
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL g_FnDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
                                                         VkDebugUtilsMessageTypeFlagsEXT             messageType,
                                                         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                         void*                                       pUserData)
 {
-    GAL_CORE_ERROR("[VulkanGraphicsContext] Validation Layer: {0}", pCallbackData->pMessage);
+    GAL_CORE_ERROR("[VulkanUtils] Validation Layer: {0}", pCallbackData->pMessage);
 
     return VK_FALSE;
 }
@@ -38,6 +30,8 @@ namespace Galaxy
         SetupDebugCallback();
         CreateSurface();
         PickPhysicalDevice();
+        CreateLogicalDevice();
+        CreateSwapChain();
         GAL_CORE_INFO("[VulkanGraphicsContext] Initiated");
     }
 
@@ -45,9 +39,10 @@ namespace Galaxy
     {
         if (g_EnableValidationLayers)
         {
-            VulkanUtils::DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugCallback, nullptr);
+            VulkanUtils::DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
         }
 
+        vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
         vkDestroyDevice(m_Device, nullptr);
         vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
         vkDestroyInstance(m_Instance, nullptr);
@@ -91,8 +86,8 @@ namespace Galaxy
         // Enable or disable validation layers
         if (g_EnableValidationLayers)
         {
-            createInfo.enabledLayerCount       = static_cast<uint32_t>(g_ValidationLayers.size());
-            createInfo.ppEnabledExtensionNames = g_ValidationLayers.data();
+            createInfo.enabledLayerCount   = static_cast<uint32_t>(g_ValidationLayers.size());
+            createInfo.ppEnabledLayerNames = g_ValidationLayers.data();
         }
         else
         {
@@ -129,7 +124,7 @@ namespace Galaxy
         createInfo.pfnUserCallback = g_FnDebugCallback;
         createInfo.pUserData       = nullptr; // Optional
 
-        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugCallback);
+        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugMessenger);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to setup debug callback!");
     }
 
@@ -181,21 +176,25 @@ namespace Galaxy
         VkPhysicalDeviceFeatures deviceFeatures = {};
 
         // Create logical device
-        VkDeviceCreateInfo createInfo    = {};
-        createInfo.sType                 = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos     = queueCreateInfos.data();
-        createInfo.queueCreateInfoCount  = static_cast<uint32_t>(queueCreateInfos.size());
-        createInfo.pEnabledFeatures      = &deviceFeatures;
-        createInfo.enabledExtensionCount = 0;
+        VkDeviceCreateInfo createInfo = {};
+        createInfo.sType              = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+        createInfo.pQueueCreateInfos    = queueCreateInfos.data();
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+
+        createInfo.pEnabledFeatures = &deviceFeatures;
+
+        createInfo.enabledExtensionCount   = static_cast<uint32_t>(g_DeviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = g_DeviceExtensions.data();
 
         if (g_EnableValidationLayers)
         {
-            createInfo.enabledExtensionCount   = static_cast<uint32_t>(g_ValidationLayers.size());
-            createInfo.ppEnabledExtensionNames = g_ValidationLayers.data();
+            createInfo.enabledLayerCount   = static_cast<uint32_t>(g_ValidationLayers.size());
+            createInfo.ppEnabledLayerNames = g_ValidationLayers.data();
         }
         else
         {
-            createInfo.enabledExtensionCount = 0;
+            createInfo.enabledLayerCount = 0;
         }
 
         auto result = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
@@ -203,6 +202,69 @@ namespace Galaxy
 
         vkGetDeviceQueue(m_Device, indices.GraphicsFamily, 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_Device, indices.PresentFamily, 0, &m_PresentQueue);
+    }
+
+    void VulkanGraphicsContext::CreateSwapChain()
+    {
+        auto swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_PhysicalDevice, m_Surface);
+
+        auto surfaceFormat = VulkanUtils::ChooseSwapSurfaceFormat(swapChainSupport.Formats);
+        auto presentMode   = VulkanUtils::ChooseSwapPresentMode(swapChainSupport.PresentModes);
+
+        int width, height;
+        glfwGetWindowSize(m_Window, &width, &height);
+        auto  extent =
+            VulkanUtils::ChooseSwapExtent(swapChainSupport.Capabilities, width, height);
+
+        // Triple buffer
+        uint32_t imageCount = swapChainSupport.Capabilities.minImageCount + 1;
+
+        if (swapChainSupport.Capabilities.maxImageCount > 0 && imageCount > swapChainSupport.Capabilities.maxImageCount)
+        {
+            imageCount = swapChainSupport.Capabilities.maxImageCount;
+        }
+
+        VkSwapchainCreateInfoKHR createInfo = {};
+        createInfo.sType                    = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        createInfo.surface                  = m_Surface;
+        createInfo.minImageCount            = imageCount;
+        createInfo.imageFormat              = surfaceFormat.format;
+        createInfo.imageColorSpace          = surfaceFormat.colorSpace;
+        createInfo.imageExtent              = extent;
+        createInfo.imageArrayLayers         = 1;
+        createInfo.imageUsage               = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        auto     indices              = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_Surface);
+        uint32_t queueFamilyIndices[] = {(uint32_t)indices.GraphicsFamily, (uint32_t)indices.PresentFamily};
+
+        if (indices.GraphicsFamily != indices.PresentFamily)
+        {
+            createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
+            createInfo.queueFamilyIndexCount = 2;
+            createInfo.pQueueFamilyIndices   = queueFamilyIndices;
+        }
+        else
+        {
+            createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
+            createInfo.queueFamilyIndexCount = 0;
+            createInfo.pQueueFamilyIndices   = nullptr;
+        }
+
+        createInfo.preTransform   = swapChainSupport.Capabilities.currentTransform;
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        createInfo.presentMode    = presentMode;
+        createInfo.clipped        = VK_TRUE;
+        createInfo.oldSwapchain   = VK_NULL_HANDLE;
+
+        auto result = vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create swap chain!");
+
+        vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
+        m_SwapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, m_SwapChainImages.data());
+
+        m_SwapChainImageFormat = surfaceFormat.format;
+        m_SwapChainExtent = extent;
     }
 
     bool VulkanGraphicsContext::CheckValidationLayerSupport()

@@ -1,7 +1,21 @@
 #pragma once
 
+#include <set>
+#include <string>
 #include <vector>
 #include <vulkan/vulkan.h>
+
+const std::vector<const char*> g_DeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+#ifndef NDEBUG
+#ifdef GAL_ENABLE_VULKAN_VALIDATION_LAYERS
+const bool                     g_EnableValidationLayers = true;
+const std::vector<const char*> g_ValidationLayers       = {"VK_LAYER_KHRONOS_validation"};
+#endif
+#else
+const bool                     g_EnableValidationLayers = false;
+const std::vector<const char*> g_ValidationLayers       = {};
+#endif
 
 namespace Galaxy::VulkanUtils
 {
@@ -11,6 +25,13 @@ namespace Galaxy::VulkanUtils
         int PresentFamily  = -1;
 
         bool IsComplete() { return GraphicsFamily >= 0 && PresentFamily >= 0; }
+    };
+
+    struct SwapChainSupportDetails
+    {
+        VkSurfaceCapabilitiesKHR        Capabilities;
+        std::vector<VkSurfaceFormatKHR> Formats;
+        std::vector<VkPresentModeKHR>   PresentModes;
     };
 
     VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
@@ -77,10 +98,120 @@ namespace Galaxy::VulkanUtils
         return indices;
     }
 
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+    {
+        SwapChainSupportDetails details;
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.Capabilities);
+
+        uint32_t formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+        if (formatCount != 0)
+        {
+            details.Formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.Formats.data());
+        }
+
+        uint32_t presentModeCount = 0;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+
+        if (presentModeCount != 0)
+        {
+            details.PresentModes.resize(presentModeCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.PresentModes.data());
+        }
+
+        return details;
+    }
+
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
+    {
+        uint32_t extensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+        std::set<std::string> requiredExtensions(g_DeviceExtensions.begin(), g_DeviceExtensions.end());
+
+        for (const auto& extension : availableExtensions)
+        {
+            requiredExtensions.erase(extension.extensionName);
+        }
+
+        return requiredExtensions.empty();
+    }
+
     bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
-        QueueFamilyIndices indices = FindQueueFamilies(device, surface);
+        QueueFamilyIndices indices             = FindQueueFamilies(device, surface);
+        bool               extensionsSupported = CheckDeviceExtensionSupport(device);
+        bool               swapChainAdequate   = false;
+        if (extensionsSupported)
+        {
+            SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device, surface);
+            swapChainAdequate = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
+        }
 
-        return indices.IsComplete();
+        return indices.IsComplete() && extensionsSupported && swapChainAdequate;
+    }
+
+    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+    {
+        if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
+        {
+            return {VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
+        }
+
+        for (const auto& availableFormat : availableFormats)
+        {
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+                availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            {
+                return availableFormat;
+            }
+        }
+
+        return availableFormats[0];
+    }
+
+    VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
+    {
+        VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
+
+        for (const auto& availablePresentMode : availablePresentModes)
+        {
+            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+            {
+                return availablePresentMode;
+            }
+            else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+            {
+                bestMode = availablePresentMode;
+            }
+        }
+
+        return bestMode;
+    }
+
+    VkExtent2D
+    ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const uint32_t& width, const uint32_t& height)
+    {
+        if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+        {
+            return capabilities.currentExtent;
+        }
+        else
+        {
+            VkExtent2D actualExtent = {width, height};
+
+            actualExtent.width = std::max(capabilities.minImageExtent.width,
+                                          std::min(capabilities.maxImageExtent.width, actualExtent.width));
+            actualExtent.height = std::max(capabilities.minImageExtent.height,
+                                          std::min(capabilities.maxImageExtent.height, actualExtent.height));
+
+            return actualExtent;
+        }
     }
 } // namespace Galaxy::VulkanUtils
