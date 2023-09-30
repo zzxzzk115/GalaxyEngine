@@ -5,7 +5,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-const std::vector<const char*> g_DeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+static std::vector<const char*> g_DeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifndef NDEBUG
 #ifdef GAL_ENABLE_VULKAN_VALIDATION_LAYERS
@@ -133,6 +133,15 @@ namespace Galaxy::VulkanUtils
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
+        for (const auto& extension : availableExtensions)
+        {
+            // Handle for macOS
+            if (strcmp(extension.extensionName, "VK_KHR_portability_subset") == 0)
+            {
+                g_DeviceExtensions.push_back("VK_KHR_portability_subset");
+            }
+        }
+
         std::set<std::string> requiredExtensions(g_DeviceExtensions.begin(), g_DeviceExtensions.end());
 
         for (const auto& extension : availableExtensions)
@@ -206,10 +215,10 @@ namespace Galaxy::VulkanUtils
         {
             VkExtent2D actualExtent = {width, height};
 
-            actualExtent.width = std::max(capabilities.minImageExtent.width,
+            actualExtent.width  = std::max(capabilities.minImageExtent.width,
                                           std::min(capabilities.maxImageExtent.width, actualExtent.width));
             actualExtent.height = std::max(capabilities.minImageExtent.height,
-                                          std::min(capabilities.maxImageExtent.height, actualExtent.height));
+                                           std::min(capabilities.maxImageExtent.height, actualExtent.height));
 
             return actualExtent;
         }

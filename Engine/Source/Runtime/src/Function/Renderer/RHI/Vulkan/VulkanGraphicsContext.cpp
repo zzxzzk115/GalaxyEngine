@@ -183,7 +183,7 @@ namespace Galaxy
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
         createInfo.pEnabledFeatures = &deviceFeatures;
-
+        
         createInfo.enabledExtensionCount   = static_cast<uint32_t>(g_DeviceExtensions.size());
         createInfo.ppEnabledExtensionNames = g_DeviceExtensions.data();
 
