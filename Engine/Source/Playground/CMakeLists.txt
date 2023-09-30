@@ -13,6 +13,9 @@ add_executable(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Test")
 
+# Copy Resource Files
+file(COPY ${GALAXY_SOURCE_DIR}/Resources DESTINATION ${TARGET_BINARY_DIR})
+
 # Set output path
 set_target_properties(${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TARGET_BINARY_DIR})
 if (MSVC)

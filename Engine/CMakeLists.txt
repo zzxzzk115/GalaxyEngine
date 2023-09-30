@@ -13,6 +13,9 @@ endif()
 
 find_package(Vulkan REQUIRED)
 
+message("Compiling Shaders...")
+CompileShaders("${CMAKE_CURRENT_SOURCE_DIR}/Resources/Shaders" "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Shaders/spv")
+
 add_subdirectory(ThirdParty)
 add_subdirectory(Source/Runtime)
 add_subdirectory(Source/Playground)
