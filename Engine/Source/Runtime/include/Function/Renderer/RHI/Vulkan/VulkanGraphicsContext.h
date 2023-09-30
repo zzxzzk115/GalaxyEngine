@@ -30,6 +30,8 @@ namespace Galaxy
 
         void CreateSwapChain();
 
+        void CreateImageViews();
+
         bool CheckValidationLayerSupport();
 
         std::vector<const char*> GetRequiredExtensions();
@@ -47,9 +49,10 @@ namespace Galaxy
         VkQueue m_PresentQueue  = VK_NULL_HANDLE;
         VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 
-        VkSwapchainKHR       m_SwapChain = VK_NULL_HANDLE;
-        std::vector<VkImage> m_SwapChainImages;
-        VkFormat             m_SwapChainImageFormat;
-        VkExtent2D           m_SwapChainExtent;
+        VkSwapchainKHR           m_SwapChain = VK_NULL_HANDLE;
+        std::vector<VkImage>     m_SwapChainImages;
+        VkFormat                 m_SwapChainImageFormat;
+        VkExtent2D               m_SwapChainExtent;
+        std::vector<VkImageView> m_SwapChainImageViews;
     };
 } // namespace Galaxy
