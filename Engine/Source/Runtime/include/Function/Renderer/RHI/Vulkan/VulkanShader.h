@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Base.h"
-#include "Function/Renderer/RHI/Vulkan/VulkanGlobalContext.h"
 #include <vulkan/vulkan.h>
 
 namespace Galaxy
@@ -17,6 +16,5 @@ namespace Galaxy
 
     private:
         VkShaderModule      m_ShaderModule;
-        VulkanGlobalContext m_GlobalContext;
     };
 } // namespace Galaxy

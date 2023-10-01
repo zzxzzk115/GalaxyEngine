@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Core/Window.h"
+#include "Core/WindowSystem.h"
 #include "Function/Renderer/RHI/RHIGraphicsContext.h"
 #include <GLFW/glfw3.h>
 
 namespace Galaxy
 {
-    class CrossPlatformWindow : public Window
+    class GLFWWindowSystem : public WindowSystem
     {
     public:
-        CrossPlatformWindow(const WindowProps& props);
+        virtual void Init(const WindowInitInfo& props) override;
 
-        virtual ~CrossPlatformWindow();
+        virtual void Shutdown() override;
 
         bool OnUpdate() override;
 
@@ -27,12 +27,7 @@ namespace Galaxy
         virtual void* GetNativeWindow() const override { return m_Window; }
 
     private:
-        virtual void Init(const WindowProps& props);
-
-        virtual void Shutdown();
-
-    private:
-        GLFWwindow*            m_Window;
+        GLFWwindow*               m_Window;
         Scope<RHIGraphicsContext> m_GraphicsContext;
 
         struct WindowData

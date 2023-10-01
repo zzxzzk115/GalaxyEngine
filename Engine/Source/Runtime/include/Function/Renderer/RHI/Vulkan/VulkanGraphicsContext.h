@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Function/Renderer/RHI/RHIGraphicsContext.h"
-#include "Function/Renderer/RHI/Vulkan/VulkanGlobalContext.h"
 
 #include <vulkan/vulkan.h>
 
@@ -17,8 +16,6 @@ namespace Galaxy
         virtual void Init() override;
 
         virtual void Release() override;
-
-        static const VulkanGlobalContext& GetGlobalContext() { return s_GlobalContext; }
 
     private:
         void CreateInstance();
@@ -40,7 +37,6 @@ namespace Galaxy
         std::vector<const char*> GetRequiredExtensions();
 
     private:
-        static VulkanGlobalContext s_GlobalContext;
         GLFWwindow*                m_Window = nullptr;
     };
 } // namespace Galaxy

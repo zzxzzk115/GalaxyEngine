@@ -1,6 +1,7 @@
 #include "Core/Application.h"
-#include "Core/Logger.h"
 #include "Core/Macro.h"
+#include "Core/WindowSystem.h"
+#include "Function/Global/GlobalContext.h"
 
 namespace Galaxy
 {
@@ -8,10 +9,11 @@ namespace Galaxy
 
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
+        g_RuntimeGlobalContext.StartSystems();
+
         GAL_CORE_ASSERT(!s_Instance, "[Application] Application already exists!");
         s_Instance = this;
 
-        Logger::Init();
         GAL_CORE_INFO("[Application] Initializing...");
 
         // Set working directory here
@@ -20,8 +22,8 @@ namespace Galaxy
             std::filesystem::current_path(m_Specification.WorkingDirectory);
         }
 
-        m_Window = Window::Create(WindowProps(m_Specification.Name));
-        m_Window->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
+        g_RuntimeGlobalContext.WindowSys->Init(WindowInitInfo(m_Specification.Name));
+        g_RuntimeGlobalContext.WindowSys->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
 
         GAL_CORE_INFO("[Application] Initiated");
     }
@@ -32,12 +34,12 @@ namespace Galaxy
     {
         while (m_IsRunning)
         {
-            if (!m_Window->OnUpdate())
+            if (!g_RuntimeGlobalContext.WindowSys->OnUpdate())
             {
                 break;
             }
 
-            m_Window->OnRender();
+            g_RuntimeGlobalContext.WindowSys->OnRender();
         }
     }
 
@@ -45,6 +47,7 @@ namespace Galaxy
     {
         GAL_CORE_INFO("[Application] Shutting down...");
         m_IsRunning = false;
+        g_RuntimeGlobalContext.ShutdownSystems();
     }
 
     void Application::OnEvent(Event& e)

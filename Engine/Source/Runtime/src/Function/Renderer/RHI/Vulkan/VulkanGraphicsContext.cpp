@@ -1,6 +1,7 @@
 #include "Function/Renderer/RHI/Vulkan/VulkanGraphicsContext.h"
 #include "Core/Application.h"
 #include "Core/Macro.h"
+#include "Function/Renderer/RHI/Vulkan/VulkanGlobalContext.h"
 #include "Function/Renderer/RHI/Vulkan/VulkanMacro.h"
 #include "Function/Renderer/RHI/Vulkan/VulkanUtils.h"
 #include "Platform/Platform.h"
@@ -19,8 +20,6 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL g_FnDebugCallback(VkDebugUtilsMessageSever
 
 namespace Galaxy
 {
-    VulkanGlobalContext VulkanGraphicsContext::s_GlobalContext = {};
-
     VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* window) : m_Window(window)
     {
         GAL_CORE_ASSERT(window, "[VulkanGraphicsContext] GLFW Window handle is null!");
@@ -42,13 +41,14 @@ namespace Galaxy
     {
         if (g_EnableValidationLayers)
         {
-            VulkanUtils::DestroyDebugUtilsMessengerEXT(s_GlobalContext.Instance, s_GlobalContext.DebugMessenger, nullptr);
+            VulkanUtils::DestroyDebugUtilsMessengerEXT(
+                g_VulkanGlobalContext.Instance, g_VulkanGlobalContext.DebugMessenger, nullptr);
         }
 
-        vkDestroySwapchainKHR(s_GlobalContext.Device, s_GlobalContext.SwapChain, nullptr);
-        vkDestroyDevice(s_GlobalContext.Device, nullptr);
-        vkDestroySurfaceKHR(s_GlobalContext.Instance, s_GlobalContext.Surface, nullptr);
-        vkDestroyInstance(s_GlobalContext.Instance, nullptr);
+        vkDestroySwapchainKHR(g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, nullptr);
+        vkDestroyDevice(g_VulkanGlobalContext.Device, nullptr);
+        vkDestroySurfaceKHR(g_VulkanGlobalContext.Instance, g_VulkanGlobalContext.Surface, nullptr);
+        vkDestroyInstance(g_VulkanGlobalContext.Instance, nullptr);
     }
 
     void VulkanGraphicsContext::CreateInstance()
@@ -97,7 +97,7 @@ namespace Galaxy
             createInfo.enabledLayerCount = 0;
         }
 
-        auto result = vkCreateInstance(&createInfo, nullptr, &s_GlobalContext.Instance);
+        auto result = vkCreateInstance(&createInfo, nullptr, &g_VulkanGlobalContext.Instance);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create instance!");
 
         // 3. Check extensions
@@ -127,40 +127,42 @@ namespace Galaxy
         createInfo.pfnUserCallback = g_FnDebugCallback;
         createInfo.pUserData       = nullptr; // Optional
 
-        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(s_GlobalContext.Instance, &createInfo, nullptr, &s_GlobalContext.DebugMessenger);
+        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(
+            g_VulkanGlobalContext.Instance, &createInfo, nullptr, &g_VulkanGlobalContext.DebugMessenger);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to setup debug callback!");
     }
 
     void VulkanGraphicsContext::PickPhysicalDevice()
     {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(s_GlobalContext.Instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(g_VulkanGlobalContext.Instance, &deviceCount, nullptr);
         GAL_CORE_ASSERT(deviceCount, "[VulkanGraphicsContext] Failed to find GPU with Vulkan support!");
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(s_GlobalContext.Instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(g_VulkanGlobalContext.Instance, &deviceCount, devices.data());
 
         for (const auto& device : devices)
         {
-            if (VulkanUtils::IsDeviceSuitable(device, s_GlobalContext.Surface))
+            if (VulkanUtils::IsDeviceSuitable(device, g_VulkanGlobalContext.Surface))
             {
-                s_GlobalContext.PhysicalDevice = device;
+                g_VulkanGlobalContext.PhysicalDevice = device;
                 break;
             }
         }
 
-        GAL_CORE_ASSERT(s_GlobalContext.PhysicalDevice != VK_NULL_HANDLE, "[VulkanGraphicsContext] Failed to find a suitable GPU!");
+        GAL_CORE_ASSERT(g_VulkanGlobalContext.PhysicalDevice != VK_NULL_HANDLE,
+                        "[VulkanGraphicsContext] Failed to find a suitable GPU!");
     }
 
     void VulkanGraphicsContext::CreateSurface()
     {
-        auto result = glfwCreateWindowSurface(s_GlobalContext.Instance, m_Window, nullptr, &s_GlobalContext.Surface);
+        auto result = glfwCreateWindowSurface(g_VulkanGlobalContext.Instance, m_Window, nullptr, &g_VulkanGlobalContext.Surface);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create window surface!");
     }
 
     void VulkanGraphicsContext::CreateLogicalDevice()
     {
-        auto indices = VulkanUtils::FindQueueFamilies(s_GlobalContext.PhysicalDevice, s_GlobalContext.Surface);
+        auto indices = VulkanUtils::FindQueueFamilies(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<int>                        uniqueQueueFamilies = {indices.GraphicsFamily, indices.PresentFamily};
@@ -200,16 +202,17 @@ namespace Galaxy
             createInfo.enabledLayerCount = 0;
         }
 
-        auto result = vkCreateDevice(s_GlobalContext.PhysicalDevice, &createInfo, nullptr, &s_GlobalContext.Device);
+        auto result = vkCreateDevice(g_VulkanGlobalContext.PhysicalDevice, &createInfo, nullptr, &g_VulkanGlobalContext.Device);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create logical device!");
 
-        vkGetDeviceQueue(s_GlobalContext.Device, indices.GraphicsFamily, 0, &s_GlobalContext.GraphicsQueue);
-        vkGetDeviceQueue(s_GlobalContext.Device, indices.PresentFamily, 0, &s_GlobalContext.PresentQueue);
+        vkGetDeviceQueue(g_VulkanGlobalContext.Device, indices.GraphicsFamily, 0, &g_VulkanGlobalContext.GraphicsQueue);
+        vkGetDeviceQueue(g_VulkanGlobalContext.Device, indices.PresentFamily, 0, &g_VulkanGlobalContext.PresentQueue);
     }
 
     void VulkanGraphicsContext::CreateSwapChain()
     {
-        auto swapChainSupport = VulkanUtils::QuerySwapChainSupport(s_GlobalContext.PhysicalDevice, s_GlobalContext.Surface);
+        auto swapChainSupport =
+            VulkanUtils::QuerySwapChainSupport(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
 
         auto surfaceFormat = VulkanUtils::ChooseSwapSurfaceFormat(swapChainSupport.Formats);
         auto presentMode   = VulkanUtils::ChooseSwapPresentMode(swapChainSupport.PresentModes);
@@ -228,7 +231,7 @@ namespace Galaxy
 
         VkSwapchainCreateInfoKHR createInfo = {};
         createInfo.sType                    = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface                  = s_GlobalContext.Surface;
+        createInfo.surface                  = g_VulkanGlobalContext.Surface;
         createInfo.minImageCount            = imageCount;
         createInfo.imageFormat              = surfaceFormat.format;
         createInfo.imageColorSpace          = surfaceFormat.colorSpace;
@@ -236,7 +239,7 @@ namespace Galaxy
         createInfo.imageArrayLayers         = 1;
         createInfo.imageUsage               = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        auto     indices              = VulkanUtils::FindQueueFamilies(s_GlobalContext.PhysicalDevice, s_GlobalContext.Surface);
+        auto     indices = VulkanUtils::FindQueueFamilies(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
         uint32_t queueFamilyIndices[] = {(uint32_t)indices.GraphicsFamily, (uint32_t)indices.PresentFamily};
 
         if (indices.GraphicsFamily != indices.PresentFamily)
@@ -258,28 +261,29 @@ namespace Galaxy
         createInfo.clipped        = VK_TRUE;
         createInfo.oldSwapchain   = VK_NULL_HANDLE;
 
-        auto result = vkCreateSwapchainKHR(s_GlobalContext.Device, &createInfo, nullptr, &s_GlobalContext.SwapChain);
+        auto result = vkCreateSwapchainKHR(g_VulkanGlobalContext.Device, &createInfo, nullptr, &g_VulkanGlobalContext.SwapChain);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create swap chain!");
 
-        vkGetSwapchainImagesKHR(s_GlobalContext.Device, s_GlobalContext.SwapChain, &imageCount, nullptr);
-        s_GlobalContext.SwapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(s_GlobalContext.Device, s_GlobalContext.SwapChain, &imageCount, s_GlobalContext.SwapChainImages.data());
+        vkGetSwapchainImagesKHR(g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, &imageCount, nullptr);
+        g_VulkanGlobalContext.SwapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(
+            g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, &imageCount, g_VulkanGlobalContext.SwapChainImages.data());
 
-        s_GlobalContext.SwapChainImageFormat = surfaceFormat.format;
-        s_GlobalContext.SwapChainExtent      = extent;
+        g_VulkanGlobalContext.SwapChainImageFormat = surfaceFormat.format;
+        g_VulkanGlobalContext.SwapChainExtent      = extent;
     }
 
     void VulkanGraphicsContext::CreateImageViews()
     {
-        s_GlobalContext.SwapChainImageViews.resize(s_GlobalContext.SwapChainImages.size());
+        g_VulkanGlobalContext.SwapChainImageViews.resize(g_VulkanGlobalContext.SwapChainImages.size());
 
-        for (size_t i = 0; i < s_GlobalContext.SwapChainImages.size(); i++)
+        for (size_t i = 0; i < g_VulkanGlobalContext.SwapChainImages.size(); i++)
         {
             VkImageViewCreateInfo createInfo {};
             createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image                           = s_GlobalContext.SwapChainImages[i];
+            createInfo.image                           = g_VulkanGlobalContext.SwapChainImages[i];
             createInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format                          = s_GlobalContext.SwapChainImageFormat;
+            createInfo.format                          = g_VulkanGlobalContext.SwapChainImageFormat;
             createInfo.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -290,7 +294,8 @@ namespace Galaxy
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount     = 1;
 
-            auto result = vkCreateImageView(s_GlobalContext.Device, &createInfo, nullptr, &s_GlobalContext.SwapChainImageViews[i]);
+            auto result = vkCreateImageView(
+                g_VulkanGlobalContext.Device, &createInfo, nullptr, &g_VulkanGlobalContext.SwapChainImageViews[i]);
             VK_CHECK(result, "[VulkanGraphicsContext] Failed to create image views!");
         }
     }

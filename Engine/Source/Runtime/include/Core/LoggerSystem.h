@@ -14,17 +14,16 @@
 
 namespace Galaxy
 {
-    class Logger
+    class LoggerSystem
     {
     public:
-        static void Init();
+        LoggerSystem();
 
-        static Ref<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-
-        static Ref<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+        Ref<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; }
+        Ref<spdlog::logger>& GetClientLogger() { return m_ClientLogger; }
 
     private:
-        static Ref<spdlog::logger> s_CoreLogger;
-        static Ref<spdlog::logger> s_ClientLogger;
+        Ref<spdlog::logger> m_CoreLogger;
+        Ref<spdlog::logger> m_ClientLogger;
     };
 } // namespace Galaxy

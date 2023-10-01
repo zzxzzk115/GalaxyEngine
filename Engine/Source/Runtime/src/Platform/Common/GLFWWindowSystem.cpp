@@ -1,4 +1,4 @@
-#include "Platform/Common/CrossPlatformWindow.h"
+#include "Platform/Common/GLFWWindowSystem.h"
 
 #include "Core/Event/ApplicationEvent.h"
 #include "Core/Event/KeyEvent.h"
@@ -13,11 +13,7 @@ namespace Galaxy
         GAL_CORE_ERROR("[Window] GLFW Error ({0}) {1}", error, description);
     }
 
-    CrossPlatformWindow::CrossPlatformWindow(const WindowProps& props) { Init(props); }
-
-    CrossPlatformWindow::~CrossPlatformWindow() { Shutdown(); }
-
-    void CrossPlatformWindow::Init(const WindowProps& props)
+    void GLFWWindowSystem::Init(const WindowInitInfo& props)
     {
         m_Data.Title  = props.Title;
         m_Data.Width  = props.Width;
@@ -141,7 +137,7 @@ namespace Galaxy
         });
     }
 
-    void CrossPlatformWindow::Shutdown()
+    void GLFWWindowSystem::Shutdown()
     {
         m_GraphicsContext->Release();
 
@@ -154,11 +150,11 @@ namespace Galaxy
         }
     }
 
-    bool CrossPlatformWindow::OnUpdate()
+    bool GLFWWindowSystem::OnUpdate()
     {
         glfwPollEvents();
         return true;
     }
 
-    void CrossPlatformWindow::OnRender() { }
+    void GLFWWindowSystem::OnRender() { }
 } // namespace Galaxy

@@ -23,4 +23,6 @@ namespace Galaxy
         VkExtent2D               SwapChainExtent;
         std::vector<VkImageView> SwapChainImageViews;
     };
+
+    extern VulkanGlobalContext g_VulkanGlobalContext;
 } // namespace Galaxy

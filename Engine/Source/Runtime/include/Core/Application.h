@@ -3,7 +3,6 @@
 #include "Core/Base.h"
 #include "Core/Event/ApplicationEvent.h"
 #include "Core/Macro.h"
-#include "Core/Window.h"
 
 namespace Galaxy
 {
@@ -36,8 +35,6 @@ namespace Galaxy
 
         void OnEvent(Event& e);
 
-        Window& GetWindow() { return *m_Window; }
-
         static Application& GetInstance() { return *s_Instance; }
 
         const ApplicationSpecification& GetSpecification() const { return m_Specification; }
@@ -48,7 +45,6 @@ namespace Galaxy
 
     private:
         ApplicationSpecification m_Specification;
-        Scope<Window>            m_Window;
         bool                     m_IsRunning     = true;
         bool                     m_IsMinimized   = false;
         float                    m_LastFrameTime = 0.0f;
