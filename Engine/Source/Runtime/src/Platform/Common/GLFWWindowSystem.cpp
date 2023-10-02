@@ -19,7 +19,8 @@ namespace Galaxy
         m_Data.Width  = props.Width;
         m_Data.Height = props.Height;
 
-        GAL_CORE_INFO("[Window] Creating window, name: {0}, resolution: {1} x {2}", props.Title, props.Width, props.Height);
+        GAL_CORE_INFO(
+            "[Window] Creating window, name: {0}, resolution: {1} x {2}", props.Title, props.Width, props.Height);
 
         if (s_glfwWindowCount == 0)
         {
@@ -156,5 +157,5 @@ namespace Galaxy
         return true;
     }
 
-    void GLFWWindowSystem::OnRender() { }
+    void GLFWWindowSystem::OnRender() {}
 } // namespace Galaxy

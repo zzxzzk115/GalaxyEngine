@@ -89,7 +89,6 @@ namespace Galaxy
         overlay->OnAttach();
     }
 
-
     bool Application::OnWindowClose(WindowCloseEvent& e)
     {
         m_IsRunning = false;

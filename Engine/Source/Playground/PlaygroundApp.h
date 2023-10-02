@@ -2,8 +2,8 @@
 
 #include "ExampleLayer.h"
 
-#include <GalaxyEngine/Core/Macro.h>
 #include <GalaxyEngine/Core/Application.h>
+#include <GalaxyEngine/Core/Macro.h>
 
 class PlaygroundApp : public Galaxy::Application
 {

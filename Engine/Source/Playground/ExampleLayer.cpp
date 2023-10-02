@@ -1,23 +1,23 @@
 #include "ExampleLayer.h"
 
 #include <GalaxyEngine/Core/Macro.h>
-#include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanShader.h>
 #include <GalaxyEngine/Function/Global/GlobalContext.h>
+#include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanShader.h>
 
 // TODO: Remove, test only!
 #include <vulkan/vulkan.h>
 
 ExampleLayer::ExampleLayer() : Galaxy::Layer("ExampleLayer") {}
 
-void ExampleLayer::OnAttach() 
-{ 
-	GAL_INFO("Playground Example Layer OnAttach...");
+void ExampleLayer::OnAttach()
+{
+    GAL_INFO("Playground Example Layer OnAttach...");
 
     // Vulkan has already initialized here.
-	
-	// Triangle Demo without abstraction
 
-	// 1. Setup Shader Stages
+    // Triangle Demo without abstraction
+
+    // 1. Setup Shader Stages
     auto vertextShaderModule  = Galaxy::VulkanShader("Resources/Shaders/spv/triangle.vert.spv");
     auto fragmentShaderModule = Galaxy::VulkanShader("Resources/Shaders/spv/triangle.frag.spv");
 
