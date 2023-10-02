@@ -11,6 +11,8 @@ namespace Galaxy
         VulkanShader(const std::string& shaderPath);
         ~VulkanShader();
 
+        VkShaderModule GetModule() const { return m_ShaderModule; }
+
     private:
         void CreateShaderModule(const std::vector<char>& shaderCode);
 
