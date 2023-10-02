@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/Event/Event.h"
-#include "Core/Input/MouseCode.h"
+#include "GalaxyEngine/Core/Event/Event.h"
+#include "GalaxyEngine/Core/Input/MouseCode.h"
 
 namespace Galaxy
 {

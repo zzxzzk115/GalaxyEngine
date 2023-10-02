@@ -1,8 +1,8 @@
-#include "Platform/Common/GLFWWindowSystem.h"
+#include "GalaxyEngine/Platform/Common/GLFWWindowSystem.h"
 
-#include "Core/Event/ApplicationEvent.h"
-#include "Core/Event/KeyEvent.h"
-#include "Core/Event/MouseEvent.h"
+#include "GalaxyEngine/Core/Event/ApplicationEvent.h"
+#include "GalaxyEngine/Core/Event/KeyEvent.h"
+#include "GalaxyEngine/Core/Event/MouseEvent.h"
 
 namespace Galaxy
 {

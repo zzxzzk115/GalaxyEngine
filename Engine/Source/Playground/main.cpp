@@ -1,5 +1,5 @@
-#include "Core/Application.h"
-#include "Platform/Platform.h"
+#include "GalaxyEngine/Core/Application.h"
+#include "GalaxyEngine/Platform/Platform.h"
 
 int main(int argc, char** argv)
 {

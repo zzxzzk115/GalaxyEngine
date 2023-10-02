@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/Event/Event.h"
-#include "Core/Input/KeyCode.h"
+#include "GalaxyEngine/Core/Event/Event.h"
+#include "GalaxyEngine/Core/Input/KeyCode.h"
 
 namespace Galaxy
 {

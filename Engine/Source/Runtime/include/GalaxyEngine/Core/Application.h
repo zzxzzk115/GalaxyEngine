@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/Base.h"
-#include "Core/Event/ApplicationEvent.h"
-#include "Core/Macro.h"
+#include "GalaxyEngine/Core/Base.h"
+#include "GalaxyEngine/Core/Event/ApplicationEvent.h"
+#include "GalaxyEngine/Core/Macro.h"
 
 namespace Galaxy
 {

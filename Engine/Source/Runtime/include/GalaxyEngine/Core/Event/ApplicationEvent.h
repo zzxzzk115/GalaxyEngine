@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Event/Event.h"
+#include "GalaxyEngine/Core/Event/Event.h"
 
 namespace Galaxy
 {

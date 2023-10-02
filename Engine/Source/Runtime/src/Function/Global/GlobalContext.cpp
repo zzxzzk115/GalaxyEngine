@@ -1,7 +1,7 @@
-#include "Function/Global/GlobalContext.h"
-#include "Core/LoggerSystem.h"
-#include "Platform/Common/GLFWWindowSystem.h"
-#include "Platform/Common/StandardFileSystem.h"
+#include "GalaxyEngine/Function/Global/GlobalContext.h"
+#include "GalaxyEngine/Core/LoggerSystem.h"
+#include "GalaxyEngine/Platform/Common/GLFWWindowSystem.h"
+#include "GalaxyEngine/Platform/Common/StandardFileSystem.h"
 
 namespace Galaxy
 {

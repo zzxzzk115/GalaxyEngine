@@ -1,5 +1,5 @@
-#include "Platform/Common/StandardFileSystem.h"
-#include "Core/Macro.h"
+#include "GalaxyEngine/Platform/Common/StandardFileSystem.h"
+#include "GalaxyEngine/Core/Macro.h"
 
 namespace Galaxy
 {

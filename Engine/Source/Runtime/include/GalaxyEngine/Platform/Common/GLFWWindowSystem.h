@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/WindowSystem.h"
-#include "Function/Renderer/RHI/RHIGraphicsContext.h"
+#include "GalaxyEngine/Core/WindowSystem.h"
+#include "GalaxyEngine/Function/Renderer/RHI/RHIGraphicsContext.h"
 #include <GLFW/glfw3.h>
 
 namespace Galaxy

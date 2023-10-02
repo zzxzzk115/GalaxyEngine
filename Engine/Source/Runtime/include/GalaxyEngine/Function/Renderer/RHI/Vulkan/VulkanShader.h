@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base.h"
+#include "GalaxyEngine/Core/Base.h"
 #include <vulkan/vulkan.h>
 
 namespace Galaxy

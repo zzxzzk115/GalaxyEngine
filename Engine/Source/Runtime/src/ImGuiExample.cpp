@@ -1,4 +1,4 @@
-#include "ImGuiExample.h"
+#include "GalaxyEngine/ImGuiExample.h"
 
 // Dear ImGui: standalone example application for Glfw + Vulkan
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/LoggerSystem.h"
-#include "Function/Global/GlobalContext.h"
-#include "Platform/Platform.h"
+#include "GalaxyEngine/Core/LoggerSystem.h"
+#include "GalaxyEngine/Function/Global/GlobalContext.h"
+#include "GalaxyEngine/Platform/Platform.h"
 
 #ifndef NDEBUG
 #if defined(GAL_PLATFORM_WINDOWS)

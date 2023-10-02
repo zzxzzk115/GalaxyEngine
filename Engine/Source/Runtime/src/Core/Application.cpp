@@ -1,7 +1,7 @@
-#include "Core/Application.h"
-#include "Core/Macro.h"
-#include "Core/WindowSystem.h"
-#include "Function/Global/GlobalContext.h"
+#include "GalaxyEngine/Core/Application.h"
+#include "GalaxyEngine/Core/Macro.h"
+#include "GalaxyEngine/Core/WindowSystem.h"
+#include "GalaxyEngine/Function/Global/GlobalContext.h"
 
 namespace Galaxy
 {
