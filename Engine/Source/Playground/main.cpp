@@ -1,5 +1,7 @@
-#include "GalaxyEngine/Core/Application.h"
-#include "GalaxyEngine/Platform/Platform.h"
+#include "PlaygroundApp.h"
+
+#include <GalaxyEngine/Core/Application.h>
+#include <GalaxyEngine/Platform/Platform.h>
 
 int main(int argc, char** argv)
 {
@@ -13,7 +15,7 @@ int main(int argc, char** argv)
     spec.Name = "Galaxy Development Playground";
     spec.CommandLineArgs = cmdArgs;
     
-    Galaxy::Application app(spec);
+    PlaygroundApp app(spec);
     app.Run();
 
     return 0;

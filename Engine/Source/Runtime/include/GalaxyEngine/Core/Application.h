@@ -3,6 +3,7 @@
 #include "GalaxyEngine/Core/Base.h"
 #include "GalaxyEngine/Core/Event/ApplicationEvent.h"
 #include "GalaxyEngine/Core/Macro.h"
+#include "GalaxyEngine/Core/Layer/LayerStack.h"
 
 namespace Galaxy
 {
@@ -35,6 +36,9 @@ namespace Galaxy
 
         void OnEvent(Event& e);
 
+        void PushLayer(Ref<Layer> layer);
+        void PushOverlay(Ref<Layer> overlay);
+
         static Application& GetInstance() { return *s_Instance; }
 
         const ApplicationSpecification& GetSpecification() const { return m_Specification; }
@@ -48,6 +52,7 @@ namespace Galaxy
         bool                     m_IsRunning     = true;
         bool                     m_IsMinimized   = false;
         float                    m_LastFrameTime = 0.0f;
+        LayerStack               m_LayerStack;
 
     private:
         static Application* s_Instance;

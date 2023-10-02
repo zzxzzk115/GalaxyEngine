@@ -1,5 +1,6 @@
 #include "GalaxyEngine/Core/Application.h"
 #include "GalaxyEngine/Core/Macro.h"
+#include "GalaxyEngine/Core/Time/Time.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 
@@ -34,9 +35,21 @@ namespace Galaxy
     {
         while (m_IsRunning)
         {
+            float    time     = Time::GetTime();
+            TimeStep timeStep = time - m_LastFrameTime;
+            m_LastFrameTime   = time;
+
             if (!g_RuntimeGlobalContext.WindowSys->OnUpdate())
             {
                 break;
+            }
+
+            if (!m_IsMinimized)
+            {
+                for (auto layer : m_LayerStack)
+                {
+                    layer->OnUpdate(timeStep);
+                }
             }
 
             g_RuntimeGlobalContext.WindowSys->OnRender();
@@ -55,7 +68,27 @@ namespace Galaxy
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(GAL_BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(GAL_BIND_EVENT_FN(Application::OnWindowResize));
+
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
+        {
+            if (e.Handled)
+                break;
+            (*it)->OnEvent(e);
+        }
     }
+
+    void Application::PushLayer(Ref<Layer> layer)
+    {
+        m_LayerStack.PushLayer(layer);
+        layer->OnAttach();
+    }
+
+    void Application::PushOverlay(Ref<Layer> overlay)
+    {
+        m_LayerStack.PushOverlay(overlay);
+        overlay->OnAttach();
+    }
+
 
     bool Application::OnWindowClose(WindowCloseEvent& e)
     {

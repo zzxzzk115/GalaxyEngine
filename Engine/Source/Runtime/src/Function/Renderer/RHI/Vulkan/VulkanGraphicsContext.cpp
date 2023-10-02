@@ -49,6 +49,8 @@ namespace Galaxy
         vkDestroyDevice(g_VulkanGlobalContext.Device, nullptr);
         vkDestroySurfaceKHR(g_VulkanGlobalContext.Instance, g_VulkanGlobalContext.Surface, nullptr);
         vkDestroyInstance(g_VulkanGlobalContext.Instance, nullptr);
+
+        GAL_CORE_INFO("[VulkanGraphicsContext] Released");
     }
 
     void VulkanGraphicsContext::CreateInstance()
