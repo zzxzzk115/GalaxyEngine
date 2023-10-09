@@ -5,6 +5,7 @@
 #include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanGlobalContext.h>
 #include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanMacro.h>
 #include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanShader.h>
+#include <GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanUtils.h>
 
 ExampleLayer::ExampleLayer() : Galaxy::Layer("ExampleLayer") {}
 
@@ -17,8 +18,8 @@ void ExampleLayer::OnAttach()
     // Triangle Demo without abstraction
 
     // 1. Setup Shader Stages
-    auto vertextShaderModule  = Galaxy::VulkanShader("Resources/Shaders/spv/triangle.vert.spv");
-    auto fragmentShaderModule = Galaxy::VulkanShader("Resources/Shaders/spv/triangle.frag.spv");
+    auto vertextShaderModule  = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.vert.spv"));
+    auto fragmentShaderModule = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.frag.spv"));
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -178,11 +179,28 @@ void ExampleLayer::OnAttach()
         framebufferInfo.height                  = Galaxy::g_VulkanGlobalContext.SwapChainExtent.height;
         framebufferInfo.layers                  = 1;
 
-        result = vkCreateFramebuffer(Galaxy::g_VulkanGlobalContext.Device, &framebufferInfo, nullptr, &m_SwapChainFrameBuffers[i]);
+        result = vkCreateFramebuffer(
+            Galaxy::g_VulkanGlobalContext.Device, &framebufferInfo, nullptr, &m_SwapChainFrameBuffers[i]);
         VK_CHECK(result, "Failed to create framebuffer!");
     }
 
-    // 7. Create Command Pool
+    // 7. Create Command Pool and Buffers
+    Galaxy::VulkanUtils::QueueFamilyIndices queueFamilyIndices = Galaxy::VulkanUtils::FindQueueFamilies(
+        Galaxy::g_VulkanGlobalContext.PhysicalDevice, Galaxy::g_VulkanGlobalContext.Surface);
+
+    VkCommandPoolCreateInfo poolInfo = {};
+    poolInfo.sType                   = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex        = queueFamilyIndices.GraphicsFamily;
+
+    result = vkCreateCommandPool(Galaxy::g_VulkanGlobalContext.Device, &poolInfo, nullptr, &m_CommandPool);
+    VK_CHECK(result, "Failed to create command pool!");
+
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType                       = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool                 = m_CommandPool;
+    allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount          = 1;
 
     // 8. Render and Present!
 
@@ -192,7 +210,8 @@ void ExampleLayer::OnAttach()
 void ExampleLayer::OnDetach()
 {
     GAL_INFO("Playground Example Layer OnDetach...");
-    for(auto framebuffer : m_SwapChainFrameBuffers)
+    vkDestroyCommandPool(Galaxy::g_VulkanGlobalContext.Device, m_CommandPool, nullptr);
+    for (auto framebuffer : m_SwapChainFrameBuffers)
     {
         vkDestroyFramebuffer(Galaxy::g_VulkanGlobalContext.Device, framebuffer, nullptr);
     }
@@ -204,3 +223,48 @@ void ExampleLayer::OnDetach()
 void ExampleLayer::OnUpdate(Galaxy::TimeStep ts) {}
 
 void ExampleLayer::OnEvent(Galaxy::Event& e) {}
+
+void ExampleLayer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+{
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType                    = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    VkResult result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    VK_CHECK(result, "Failed to begin recording command buffer!");
+
+    VkRenderPassBeginInfo renderPassInfo = {};
+    renderPassInfo.sType                 = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass            = m_RenderPass;
+    renderPassInfo.framebuffer           = m_SwapChainFrameBuffers[imageIndex];
+
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = Galaxy::g_VulkanGlobalContext.SwapChainExtent;
+
+    VkClearValue clearColor        = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues    = &clearColor;
+
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+
+    VkViewport viewport = {};
+    viewport.x          = 0.0f;
+    viewport.y          = 0.0f;
+    viewport.width      = static_cast<float>(Galaxy::g_VulkanGlobalContext.SwapChainExtent.width);
+    viewport.height     = static_cast<float>(Galaxy::g_VulkanGlobalContext.SwapChainExtent.height);
+    viewport.minDepth   = 0.0f;
+    viewport.maxDepth   = 1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+    VkRect2D scissor = {};
+    scissor.offset   = {0, 0};
+    scissor.extent   = Galaxy::g_VulkanGlobalContext.SwapChainExtent;
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer);
+
+    result = vkEndCommandBuffer(commandBuffer);
+    VK_CHECK(result, "Failed to end recording command buffer!");
+}

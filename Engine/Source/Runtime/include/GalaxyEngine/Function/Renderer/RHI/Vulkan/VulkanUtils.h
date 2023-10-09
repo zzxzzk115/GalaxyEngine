@@ -34,10 +34,10 @@ namespace Galaxy::VulkanUtils
         std::vector<VkPresentModeKHR>   PresentModes;
     };
 
-    VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
-                                          const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                          const VkAllocationCallbacks*              pAllocator,
-                                          VkDebugUtilsMessengerEXT*                 pCallback)
+    static VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
+                                                 const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+                                                 const VkAllocationCallbacks*              pAllocator,
+                                                 VkDebugUtilsMessengerEXT*                 pCallback)
     {
         auto func =
             (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -49,9 +49,9 @@ namespace Galaxy::VulkanUtils
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,
-                                       VkDebugUtilsMessengerEXT     callback,
-                                       const VkAllocationCallbacks* pAllocator)
+    static void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,
+                                              VkDebugUtilsMessengerEXT     callback,
+                                              const VkAllocationCallbacks* pAllocator)
     {
         auto func =
             (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -61,7 +61,7 @@ namespace Galaxy::VulkanUtils
         }
     }
 
-    QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
+    static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
         QueueFamilyIndices indices;
 
@@ -98,7 +98,7 @@ namespace Galaxy::VulkanUtils
         return indices;
     }
 
-    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+    static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
         SwapChainSupportDetails details;
 
@@ -125,7 +125,7 @@ namespace Galaxy::VulkanUtils
         return details;
     }
 
-    bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
+    static bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
     {
         uint32_t extensionCount = 0;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -152,7 +152,7 @@ namespace Galaxy::VulkanUtils
         return requiredExtensions.empty();
     }
 
-    bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
+    static bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
         QueueFamilyIndices indices             = FindQueueFamilies(device, surface);
         bool               extensionsSupported = CheckDeviceExtensionSupport(device);
@@ -166,7 +166,7 @@ namespace Galaxy::VulkanUtils
         return indices.IsComplete() && extensionsSupported && swapChainAdequate;
     }
 
-    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+    static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
     {
         if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
         {
@@ -185,7 +185,7 @@ namespace Galaxy::VulkanUtils
         return availableFormats[0];
     }
 
-    VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
+    static VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes)
     {
         VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
@@ -204,7 +204,7 @@ namespace Galaxy::VulkanUtils
         return bestMode;
     }
 
-    VkExtent2D
+    static VkExtent2D
     ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const uint32_t& width, const uint32_t& height)
     {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())

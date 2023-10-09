@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GalaxyEngine/Core/LoggerSystem.h"
+#include "GalaxyEngine/Core/FileSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 #include "GalaxyEngine/Platform/Platform.h"
 
@@ -79,3 +80,5 @@
 #define GAL_ASSERT(...)
 #define GAL_CORE_ASSERT(...)
 #endif
+
+#define GAL_RELATIVE_PATH(path) Galaxy::g_RuntimeGlobalContext.FileSys->GetExecutableRelativeDirectory(path)

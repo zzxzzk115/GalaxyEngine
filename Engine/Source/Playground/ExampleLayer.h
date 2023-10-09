@@ -21,8 +21,13 @@ public:
     void OnEvent(Galaxy::Event& e) override;
 
 private:
+    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+private:
     VkPipelineLayout           m_PipelineLayout;
     VkRenderPass               m_RenderPass;
     VkPipeline                 m_GraphicsPipeline;
     std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
+    VkCommandPool              m_CommandPool;
+    VkCommandBuffer            m_CommandBuffer;
 };

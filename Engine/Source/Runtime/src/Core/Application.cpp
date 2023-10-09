@@ -2,6 +2,7 @@
 #include "GalaxyEngine/Core/Macro.h"
 #include "GalaxyEngine/Core/Time/Time.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
+#include "GalaxyEngine/Core/FileSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 
 namespace Galaxy
@@ -16,6 +17,9 @@ namespace Galaxy
         s_Instance = this;
 
         GAL_CORE_INFO("[Application] Initializing...");
+
+        // Init Executable Directory
+        g_RuntimeGlobalContext.FileSys->InitExecutableDirectory(specification.CommandLineArgs.Args[0]);
 
         // Set working directory here
         if (!m_Specification.WorkingDirectory.empty())
