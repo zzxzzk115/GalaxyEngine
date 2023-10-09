@@ -201,15 +201,35 @@ void ExampleLayer::OnAttach()
     allocInfo.commandPool                 = m_CommandPool;
     allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount          = 1;
+    result = vkAllocateCommandBuffers(Galaxy::g_VulkanGlobalContext.Device, &allocInfo, &m_CommandBuffer);
 
-    // 8. Render and Present!
+    // 8. Create Sync Objects
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType                 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    // 9. Recreate Swapchain
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType             = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags             = VK_FENCE_CREATE_SIGNALED_BIT; // set awake
+
+    result =
+        vkCreateSemaphore(Galaxy::g_VulkanGlobalContext.Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore);
+    VK_CHECK(result, "Failed to create image available semaphore!");
+
+    result =
+        vkCreateSemaphore(Galaxy::g_VulkanGlobalContext.Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore);
+    VK_CHECK(result, "Failed to create render finished semaphore!");
+
+    result = vkCreateFence(Galaxy::g_VulkanGlobalContext.Device, &fenceInfo, nullptr, &m_InFlightFence);
+    VK_CHECK(result, "Failed to create in flight fence!");
 }
 
 void ExampleLayer::OnDetach()
 {
     GAL_INFO("Playground Example Layer OnDetach...");
+    vkDeviceWaitIdle(Galaxy::g_VulkanGlobalContext.Device);
+    vkDestroySemaphore(Galaxy::g_VulkanGlobalContext.Device, m_ImageAvailableSemaphore, nullptr);
+    vkDestroySemaphore(Galaxy::g_VulkanGlobalContext.Device, m_RenderFinishedSemaphore, nullptr);
+    vkDestroyFence(Galaxy::g_VulkanGlobalContext.Device, m_InFlightFence, nullptr);
     vkDestroyCommandPool(Galaxy::g_VulkanGlobalContext.Device, m_CommandPool, nullptr);
     for (auto framebuffer : m_SwapChainFrameBuffers)
     {
@@ -220,7 +240,58 @@ void ExampleLayer::OnDetach()
     vkDestroyRenderPass(Galaxy::g_VulkanGlobalContext.Device, m_RenderPass, nullptr);
 }
 
-void ExampleLayer::OnUpdate(Galaxy::TimeStep ts) {}
+void ExampleLayer::OnUpdate(Galaxy::TimeStep ts)
+{
+    // 1. Render and Present!
+    vkWaitForFences(Galaxy::g_VulkanGlobalContext.Device, 1, &m_InFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(Galaxy::g_VulkanGlobalContext.Device, 1, &m_InFlightFence);
+
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(Galaxy::g_VulkanGlobalContext.Device,
+                          Galaxy::g_VulkanGlobalContext.SwapChain,
+                          UINT64_MAX,
+                          m_ImageAvailableSemaphore,
+                          VK_NULL_HANDLE,
+                          &imageIndex);
+
+    vkResetCommandBuffer(m_CommandBuffer, /*VkCommandBufferResetFlagBits*/ 0);
+    RecordCommandBuffer(m_CommandBuffer, imageIndex);
+
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore          waitSemaphores[] = {m_ImageAvailableSemaphore};
+    VkPipelineStageFlags waitStages[]     = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount         = 1;
+    submitInfo.pWaitSemaphores            = waitSemaphores;
+    submitInfo.pWaitDstStageMask          = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers    = &m_CommandBuffer;
+
+    VkSemaphore signalSemaphores[]  = {m_RenderFinishedSemaphore};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores    = signalSemaphores;
+
+    VkResult result = vkQueueSubmit(Galaxy::g_VulkanGlobalContext.GraphicsQueue, 1, &submitInfo, m_InFlightFence);
+    VK_CHECK(result, "Failed to submit draw command buffer!");
+
+    VkPresentInfoKHR presentInfo = {};
+    presentInfo.sType            = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores    = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = {Galaxy::g_VulkanGlobalContext.SwapChain};
+    presentInfo.swapchainCount  = 1;
+    presentInfo.pSwapchains     = swapChains;
+
+    presentInfo.pImageIndices = &imageIndex;
+
+    vkQueuePresentKHR(Galaxy::g_VulkanGlobalContext.PresentQueue, &presentInfo);
+
+    // 2. Recreate Swapchain
+}
 
 void ExampleLayer::OnEvent(Galaxy::Event& e) {}
 
