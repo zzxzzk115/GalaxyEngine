@@ -9,10 +9,10 @@ namespace Galaxy
     public:
         virtual ~RHIGraphicsContext() = default;
 
-        virtual void Init() = 0;
+        virtual void Init(void* window) = 0;
 
         virtual void Release() = 0;
 
-        static Scope<RHIGraphicsContext> Create(void* window);
+        static Scope<RHIGraphicsContext> Create();
     };
 } // namespace Galaxy

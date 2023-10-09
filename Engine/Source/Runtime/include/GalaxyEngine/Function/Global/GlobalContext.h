@@ -7,12 +7,14 @@ namespace Galaxy
     class LoggerSystem;
     class FileSystem;
     class WindowSystem;
+    class RenderSystem;
 
     struct RuntimeGlobalContext
     {
         Ref<LoggerSystem> LoggerSys;
         Ref<FileSystem>   FileSys;
         Ref<WindowSystem> WindowSys;
+        Ref<RenderSystem> RenderSys;
 
     public:
         void StartSystems();

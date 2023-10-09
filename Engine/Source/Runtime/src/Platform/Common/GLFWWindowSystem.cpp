@@ -33,10 +33,6 @@ namespace Galaxy
             // Disable creating OpenGL Context
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-            // Disable resizable currently for development
-            // TODO: Remove and implement resizable window
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
             // Create window
             m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
             ++s_glfwWindowCount;
@@ -54,8 +50,8 @@ namespace Galaxy
         // glfwSetWindowIcon(m_Window, 1, images);
         // buffer.Release();
 
-        m_GraphicsContext = RHIGraphicsContext::Create(m_Window);
-        m_GraphicsContext->Init();
+        m_GraphicsContext = RHIGraphicsContext::Create();
+        m_GraphicsContext->Init(m_Window);
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
 

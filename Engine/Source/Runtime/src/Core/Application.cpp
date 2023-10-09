@@ -3,6 +3,7 @@
 #include "GalaxyEngine/Core/Time/Time.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
 #include "GalaxyEngine/Core/FileSystem.h"
+#include "GalaxyEngine/Function/Renderer/RenderSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 
 namespace Galaxy
@@ -101,12 +102,17 @@ namespace Galaxy
 
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
-        if (e.GetWidth() == 0 || e.GetHeight() == 0)
+        auto w = e.GetWidth();
+        auto h = e.GetHeight();
+
+        if (w == 0 || h == 0)
         {
             m_IsMinimized = true;
             return false;
         }
 
+        g_RuntimeGlobalContext.RenderSys->SetViewport(0, 0, w, h);
+        
         m_IsMinimized = false;
 
         return false;

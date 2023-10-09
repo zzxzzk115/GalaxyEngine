@@ -1,8 +1,8 @@
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanGraphicsContext.h"
 #include "GalaxyEngine/Core/Application.h"
 #include "GalaxyEngine/Core/Macro.h"
-#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanGlobalContext.h"
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanMacro.h"
+#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanShader.h"
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanUtils.h"
 #include "GalaxyEngine/Platform/Platform.h"
 
@@ -20,13 +20,15 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL g_FnDebugCallback(VkDebugUtilsMessageSever
 
 namespace Galaxy
 {
-    VulkanGraphicsContext::VulkanGraphicsContext(GLFWwindow* window) : m_Window(window)
+    VulkanGraphicsContext* g_VulkanGraphicsContextPtr = nullptr;
+
+    void VulkanGraphicsContext::Init(void* window)
     {
         GAL_CORE_ASSERT(window, "[VulkanGraphicsContext] GLFW Window handle is null!");
-    }
+        m_Window = (GLFWwindow*)window;
 
-    void VulkanGraphicsContext::Init()
-    {
+        g_VulkanGraphicsContextPtr = this;
+
         CreateInstance();
         SetupDebugCallback();
         CreateSurface();
@@ -34,23 +36,56 @@ namespace Galaxy
         CreateLogicalDevice();
         CreateSwapChain();
         CreateImageViews();
+        CreateRenderPass();
+        CreateGraphicsPipeline();
+        CreateFramebuffers();
+        CreateCommandPool();
+        CreateCommandBuffers();
+        CreateSyncObjects();
         GAL_CORE_INFO("[VulkanGraphicsContext] Initiated");
     }
 
     void VulkanGraphicsContext::Release()
     {
-        if (g_EnableValidationLayers)
+        CleanupSwapChain();
+
+        vkDestroyPipeline(Device, GraphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(Device, PipelineLayout, nullptr);
+
+        vkDestroyRenderPass(Device, RenderPass, nullptr);
+
+        for (int i = 0; i < MaxFramesInFlight; ++i)
         {
-            VulkanUtils::DestroyDebugUtilsMessengerEXT(
-                g_VulkanGlobalContext.Instance, g_VulkanGlobalContext.DebugMessenger, nullptr);
+            vkDestroySemaphore(Device, ImageAvailableSemaphores[i], nullptr);
+            vkDestroySemaphore(Device, RenderFinishedSemaphores[i], nullptr);
+            vkDestroyFence(Device, InFlightFences[i], nullptr);
         }
 
-        vkDestroySwapchainKHR(g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, nullptr);
-        vkDestroyDevice(g_VulkanGlobalContext.Device, nullptr);
-        vkDestroySurfaceKHR(g_VulkanGlobalContext.Instance, g_VulkanGlobalContext.Surface, nullptr);
-        vkDestroyInstance(g_VulkanGlobalContext.Instance, nullptr);
+        vkDestroyCommandPool(Device, CommandPool, nullptr);
+
+        vkDestroyDevice(Device, nullptr);
+
+        if (g_EnableValidationLayers)
+        {
+            VulkanUtils::DestroyDebugUtilsMessengerEXT(Instance, DebugMessenger, nullptr);
+        }
+
+        vkDestroySurfaceKHR(Instance, Surface, nullptr);
+
+        vkDestroyInstance(Instance, nullptr);
 
         GAL_CORE_INFO("[VulkanGraphicsContext] Released");
+    }
+
+    void VulkanGraphicsContext::RecreateSwapChain()
+    {
+        vkDeviceWaitIdle(Device);
+
+        CleanupSwapChain();
+
+        CreateSwapChain();
+        CreateImageViews();
+        CreateFramebuffers();
     }
 
     void VulkanGraphicsContext::CreateInstance()
@@ -99,7 +134,7 @@ namespace Galaxy
             createInfo.enabledLayerCount = 0;
         }
 
-        auto result = vkCreateInstance(&createInfo, nullptr, &g_VulkanGlobalContext.Instance);
+        auto result = vkCreateInstance(&createInfo, nullptr, &Instance);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create instance!");
 
         // 3. Check extensions
@@ -129,42 +164,40 @@ namespace Galaxy
         createInfo.pfnUserCallback = g_FnDebugCallback;
         createInfo.pUserData       = nullptr; // Optional
 
-        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(
-            g_VulkanGlobalContext.Instance, &createInfo, nullptr, &g_VulkanGlobalContext.DebugMessenger);
+        auto result = VulkanUtils::CreateDebugUtilsMessengerEXT(Instance, &createInfo, nullptr, &DebugMessenger);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to setup debug callback!");
     }
 
     void VulkanGraphicsContext::PickPhysicalDevice()
     {
         uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(g_VulkanGlobalContext.Instance, &deviceCount, nullptr);
+        vkEnumeratePhysicalDevices(Instance, &deviceCount, nullptr);
         GAL_CORE_ASSERT(deviceCount, "[VulkanGraphicsContext] Failed to find GPU with Vulkan support!");
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(g_VulkanGlobalContext.Instance, &deviceCount, devices.data());
+        vkEnumeratePhysicalDevices(Instance, &deviceCount, devices.data());
 
         for (const auto& device : devices)
         {
-            if (VulkanUtils::IsDeviceSuitable(device, g_VulkanGlobalContext.Surface))
+            if (VulkanUtils::IsDeviceSuitable(device, Surface))
             {
-                g_VulkanGlobalContext.PhysicalDevice = device;
+                PhysicalDevice = device;
                 break;
             }
         }
 
-        GAL_CORE_ASSERT(g_VulkanGlobalContext.PhysicalDevice != VK_NULL_HANDLE,
-                        "[VulkanGraphicsContext] Failed to find a suitable GPU!");
+        GAL_CORE_ASSERT(PhysicalDevice != VK_NULL_HANDLE, "[VulkanGraphicsContext] Failed to find a suitable GPU!");
     }
 
     void VulkanGraphicsContext::CreateSurface()
     {
-        auto result = glfwCreateWindowSurface(g_VulkanGlobalContext.Instance, m_Window, nullptr, &g_VulkanGlobalContext.Surface);
+        auto result = glfwCreateWindowSurface(Instance, m_Window, nullptr, &Surface);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create window surface!");
     }
 
     void VulkanGraphicsContext::CreateLogicalDevice()
     {
-        auto indices = VulkanUtils::FindQueueFamilies(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
+        auto indices = VulkanUtils::FindQueueFamilies(PhysicalDevice, Surface);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<int>                        uniqueQueueFamilies = {indices.GraphicsFamily, indices.PresentFamily};
@@ -204,17 +237,16 @@ namespace Galaxy
             createInfo.enabledLayerCount = 0;
         }
 
-        auto result = vkCreateDevice(g_VulkanGlobalContext.PhysicalDevice, &createInfo, nullptr, &g_VulkanGlobalContext.Device);
+        auto result = vkCreateDevice(PhysicalDevice, &createInfo, nullptr, &Device);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create logical device!");
 
-        vkGetDeviceQueue(g_VulkanGlobalContext.Device, indices.GraphicsFamily, 0, &g_VulkanGlobalContext.GraphicsQueue);
-        vkGetDeviceQueue(g_VulkanGlobalContext.Device, indices.PresentFamily, 0, &g_VulkanGlobalContext.PresentQueue);
+        vkGetDeviceQueue(Device, indices.GraphicsFamily, 0, &GraphicsQueue);
+        vkGetDeviceQueue(Device, indices.PresentFamily, 0, &PresentQueue);
     }
 
     void VulkanGraphicsContext::CreateSwapChain()
     {
-        auto swapChainSupport =
-            VulkanUtils::QuerySwapChainSupport(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
+        auto swapChainSupport = VulkanUtils::QuerySwapChainSupport(PhysicalDevice, Surface);
 
         auto surfaceFormat = VulkanUtils::ChooseSwapSurfaceFormat(swapChainSupport.Formats);
         auto presentMode   = VulkanUtils::ChooseSwapPresentMode(swapChainSupport.PresentModes);
@@ -233,7 +265,7 @@ namespace Galaxy
 
         VkSwapchainCreateInfoKHR createInfo = {};
         createInfo.sType                    = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface                  = g_VulkanGlobalContext.Surface;
+        createInfo.surface                  = Surface;
         createInfo.minImageCount            = imageCount;
         createInfo.imageFormat              = surfaceFormat.format;
         createInfo.imageColorSpace          = surfaceFormat.colorSpace;
@@ -241,7 +273,7 @@ namespace Galaxy
         createInfo.imageArrayLayers         = 1;
         createInfo.imageUsage               = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        auto     indices = VulkanUtils::FindQueueFamilies(g_VulkanGlobalContext.PhysicalDevice, g_VulkanGlobalContext.Surface);
+        auto     indices              = VulkanUtils::FindQueueFamilies(PhysicalDevice, Surface);
         uint32_t queueFamilyIndices[] = {(uint32_t)indices.GraphicsFamily, (uint32_t)indices.PresentFamily};
 
         if (indices.GraphicsFamily != indices.PresentFamily)
@@ -263,29 +295,43 @@ namespace Galaxy
         createInfo.clipped        = VK_TRUE;
         createInfo.oldSwapchain   = VK_NULL_HANDLE;
 
-        auto result = vkCreateSwapchainKHR(g_VulkanGlobalContext.Device, &createInfo, nullptr, &g_VulkanGlobalContext.SwapChain);
+        auto result = vkCreateSwapchainKHR(Device, &createInfo, nullptr, &SwapChain);
         VK_CHECK(result, "[VulkanGraphicsContext] Failed to create swap chain!");
 
-        vkGetSwapchainImagesKHR(g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, &imageCount, nullptr);
-        g_VulkanGlobalContext.SwapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(
-            g_VulkanGlobalContext.Device, g_VulkanGlobalContext.SwapChain, &imageCount, g_VulkanGlobalContext.SwapChainImages.data());
+        vkGetSwapchainImagesKHR(Device, SwapChain, &imageCount, nullptr);
+        SwapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(Device, SwapChain, &imageCount, SwapChainImages.data());
 
-        g_VulkanGlobalContext.SwapChainImageFormat = surfaceFormat.format;
-        g_VulkanGlobalContext.SwapChainExtent      = extent;
+        SwapChainImageFormat = surfaceFormat.format;
+        SwapChainExtent      = extent;
+    }
+
+    void VulkanGraphicsContext::CleanupSwapChain()
+    {
+        for (size_t i = 0; i < SwapChainFrameBuffers.size(); ++i)
+        {
+            vkDestroyFramebuffer(Device, SwapChainFrameBuffers[i], nullptr);
+        }
+
+        for (size_t i = 0; i < SwapChainImageViews.size(); ++i)
+        {
+            vkDestroyImageView(Device, SwapChainImageViews[i], nullptr);
+        }
+
+        vkDestroySwapchainKHR(Device, SwapChain, nullptr);
     }
 
     void VulkanGraphicsContext::CreateImageViews()
     {
-        g_VulkanGlobalContext.SwapChainImageViews.resize(g_VulkanGlobalContext.SwapChainImages.size());
+        SwapChainImageViews.resize(SwapChainImages.size());
 
-        for (size_t i = 0; i < g_VulkanGlobalContext.SwapChainImages.size(); i++)
+        for (size_t i = 0; i < SwapChainImages.size(); i++)
         {
             VkImageViewCreateInfo createInfo {};
             createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image                           = g_VulkanGlobalContext.SwapChainImages[i];
+            createInfo.image                           = SwapChainImages[i];
             createInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format                          = g_VulkanGlobalContext.SwapChainImageFormat;
+            createInfo.format                          = SwapChainImageFormat;
             createInfo.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -296,9 +342,226 @@ namespace Galaxy
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount     = 1;
 
-            auto result = vkCreateImageView(
-                g_VulkanGlobalContext.Device, &createInfo, nullptr, &g_VulkanGlobalContext.SwapChainImageViews[i]);
+            auto result = vkCreateImageView(Device, &createInfo, nullptr, &SwapChainImageViews[i]);
             VK_CHECK(result, "[VulkanGraphicsContext] Failed to create image views!");
+        }
+    }
+
+    void VulkanGraphicsContext::CreateRenderPass()
+    {
+        VkAttachmentDescription colorAttachment = {};
+        colorAttachment.format                  = SwapChainImageFormat;
+        colorAttachment.samples                 = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp                  = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp                 = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp           = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp          = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout           = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout             = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        VkAttachmentReference colorAttachmentRef = {};
+        colorAttachmentRef.attachment            = 0;
+        colorAttachmentRef.layout                = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass = {};
+        subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments    = &colorAttachmentRef;
+
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType                  = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount        = 1;
+        renderPassInfo.pAttachments           = &colorAttachment;
+        renderPassInfo.subpassCount           = 1;
+        renderPassInfo.pSubpasses             = &subpass;
+
+        auto result = vkCreateRenderPass(Device, &renderPassInfo, nullptr, &RenderPass);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create render pass!");
+    }
+
+    void VulkanGraphicsContext::CreateGraphicsPipeline()
+    {
+        auto vertextShaderModule  = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.vert.spv"));
+        auto fragmentShaderModule = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.frag.spv"));
+
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage                           = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module                          = vertextShaderModule.GetModule();
+        vertShaderStageInfo.pName                           = "main";
+
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage                           = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module                          = fragmentShaderModule.GetModule();
+        fragShaderStageInfo.pName                           = "main";
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+        vertexInputInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount   = 0;
+        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+        VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+        inputAssembly.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssembly.topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+        VkViewport viewport = {};
+        viewport.x          = 0.0f;
+        viewport.y          = 0.0f;
+        viewport.width      = (float)SwapChainExtent.width;
+        viewport.height     = (float)SwapChainExtent.height;
+        viewport.minDepth   = 0.0f;
+        viewport.maxDepth   = 1.0f;
+
+        VkRect2D scissor = {};
+        scissor.offset   = {0, 0};
+        scissor.extent   = SwapChainExtent;
+
+        VkPipelineViewportStateCreateInfo viewportState = {};
+        viewportState.sType                             = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportState.viewportCount                     = 1;
+        viewportState.pViewports                        = &viewport;
+        viewportState.scissorCount                      = 1;
+        viewportState.pScissors                         = &scissor;
+
+        VkPipelineRasterizationStateCreateInfo rasterizer = {};
+        rasterizer.sType                                  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizer.depthClampEnable                       = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable                = VK_FALSE;
+        rasterizer.polygonMode                            = VK_POLYGON_MODE_FILL;
+        rasterizer.lineWidth                              = 1.0f;
+        rasterizer.cullMode                               = VK_CULL_MODE_BACK_BIT;
+        rasterizer.frontFace                              = VK_FRONT_FACE_CLOCKWISE;
+        rasterizer.depthBiasEnable                        = VK_FALSE;
+
+        VkPipelineMultisampleStateCreateInfo multisampling = {};
+        multisampling.sType                                = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampling.sampleShadingEnable                  = VK_FALSE;
+        multisampling.rasterizationSamples                 = VK_SAMPLE_COUNT_1_BIT;
+
+        VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+        colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.blendEnable = VK_FALSE;
+
+        VkPipelineColorBlendStateCreateInfo colorBlending = {};
+        colorBlending.sType                               = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable                       = VK_FALSE;
+        colorBlending.attachmentCount                     = 1;
+        colorBlending.pAttachments                        = &colorBlendAttachment;
+
+        VkDynamicState                   dynamicStates[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        VkPipelineDynamicStateCreateInfo dynamicState    = {};
+        dynamicState.sType                               = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicState.dynamicStateCount                   = 2;
+        dynamicState.pDynamicStates                      = dynamicStates;
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+        pipelineLayoutInfo.sType                      = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+        VkResult result = vkCreatePipelineLayout(Device, &pipelineLayoutInfo, nullptr, &PipelineLayout);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create pipeline layout!");
+
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType                        = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages    = shaderStages;
+
+        pipelineInfo.pVertexInputState   = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pViewportState      = &viewportState;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pMultisampleState   = &multisampling;
+        pipelineInfo.pDepthStencilState  = nullptr;
+        pipelineInfo.pColorBlendState    = &colorBlending;
+        pipelineInfo.pDynamicState       = &dynamicState;
+
+        pipelineInfo.layout = PipelineLayout;
+
+        pipelineInfo.renderPass = RenderPass;
+        pipelineInfo.subpass    = 0;
+
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex  = -1;
+
+        result = vkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &GraphicsPipeline);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create graphics pipeline!");
+    }
+
+    void VulkanGraphicsContext::CreateFramebuffers()
+    {
+        SwapChainFrameBuffers.resize(SwapChainImageViews.size());
+
+        for (size_t i = 0; i < SwapChainImageViews.size(); ++i)
+        {
+            VkImageView attachments[] = {SwapChainImageViews[i]};
+
+            VkFramebufferCreateInfo framebufferInfo = {};
+            framebufferInfo.sType                   = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass              = RenderPass;
+            framebufferInfo.attachmentCount         = 1;
+            framebufferInfo.pAttachments            = attachments;
+            framebufferInfo.width                   = SwapChainExtent.width;
+            framebufferInfo.height                  = SwapChainExtent.height;
+            framebufferInfo.layers                  = 1;
+
+            auto result = vkCreateFramebuffer(Device, &framebufferInfo, nullptr, &SwapChainFrameBuffers[i]);
+            VK_CHECK(result, "[VulkanGraphicsContext] Failed to create framebuffer!");
+        }
+    }
+
+    void VulkanGraphicsContext::CreateCommandPool()
+    {
+        Galaxy::VulkanUtils::QueueFamilyIndices queueFamilyIndices =
+            Galaxy::VulkanUtils::FindQueueFamilies(PhysicalDevice, Surface);
+
+        VkCommandPoolCreateInfo poolInfo = {};
+        poolInfo.sType                   = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex        = queueFamilyIndices.GraphicsFamily;
+
+        auto result = vkCreateCommandPool(Device, &poolInfo, nullptr, &CommandPool);
+        VK_CHECK(result, "[VulkanGraphicsContext] Failed to create command pool!");
+    }
+
+    void VulkanGraphicsContext::CreateCommandBuffers()
+    {
+        CommandBuffers.resize(MaxFramesInFlight);
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType                       = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool                 = CommandPool;
+        allocInfo.level                       = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount          = (uint32_t)CommandBuffers.size();
+        auto result                           = vkAllocateCommandBuffers(Device, &allocInfo, CommandBuffers.data());
+    }
+
+    void VulkanGraphicsContext::CreateSyncObjects()
+    {
+        ImageAvailableSemaphores.resize(MaxFramesInFlight);
+        RenderFinishedSemaphores.resize(MaxFramesInFlight);
+        InFlightFences.resize(MaxFramesInFlight);
+
+        VkSemaphoreCreateInfo semaphoreInfo = {};
+        semaphoreInfo.sType                 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        VkFenceCreateInfo fenceInfo = {};
+        fenceInfo.sType             = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags             = VK_FENCE_CREATE_SIGNALED_BIT; // set awake
+
+        for (int i = 0; i < MaxFramesInFlight; ++i)
+        {
+            auto result = vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &ImageAvailableSemaphores[i]);
+            VK_CHECK(result, "[VulkanGraphicsContext] Failed to create image available semaphore!");
+
+            result = vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &RenderFinishedSemaphores[i]);
+            VK_CHECK(result, "[VulkanGraphicsContext] Failed to create render finished semaphore!");
+
+            result = vkCreateFence(Device, &fenceInfo, nullptr, &InFlightFences[i]);
+            VK_CHECK(result, "[VulkanGraphicsContext] Failed to create in flight fence!");
         }
     }
 

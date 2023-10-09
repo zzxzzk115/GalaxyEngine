@@ -4,8 +4,8 @@
 
 namespace Galaxy
 {
-    Scope<RHIGraphicsContext> RHIGraphicsContext::Create(void* window)
+    Scope<RHIGraphicsContext> RHIGraphicsContext::Create()
     {
-        return CreateScope<VulkanGraphicsContext>(static_cast<GLFWwindow*>(window));
+        return CreateScope<VulkanGraphicsContext>();
     }
 } // namespace Galaxy
