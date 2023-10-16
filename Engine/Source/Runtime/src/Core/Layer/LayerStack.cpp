@@ -1,3 +1,9 @@
+//
+// LayerStack.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 12:11.
+//
+
 #include "GalaxyEngine/Core/Layer/LayerStack.h"
 
 namespace Galaxy

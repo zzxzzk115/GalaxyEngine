@@ -1,10 +1,16 @@
+//
+// Application.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 15:26.
+//
+
 #include "GalaxyEngine/Core/Application.h"
+#include "GalaxyEngine/Core/FileSystem.h"
 #include "GalaxyEngine/Core/Macro.h"
 #include "GalaxyEngine/Core/Time/Time.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
-#include "GalaxyEngine/Core/FileSystem.h"
-#include "GalaxyEngine/Function/Renderer/RenderSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
+#include "GalaxyEngine/Function/Renderer/RenderSystem.h"
 
 namespace Galaxy
 {
@@ -112,7 +118,7 @@ namespace Galaxy
         }
 
         g_RuntimeGlobalContext.RenderSys->SetViewport(0, 0, w, h);
-        
+
         m_IsMinimized = false;
 
         return false;

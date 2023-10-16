@@ -1,3 +1,9 @@
+//
+// GlobalContext.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 15:24.
+//
+
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 #include "GalaxyEngine/Core/LoggerSystem.h"
 #include "GalaxyEngine/Platform/Common/GLFWWindowSystem.h"

@@ -1,3 +1,9 @@
+//
+// LoggerSystem.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 12:14.
+//
+
 #include "GalaxyEngine/Core/LoggerSystem.h"
 
 #include <spdlog/sinks/basic_file_sink.h>

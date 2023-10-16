@@ -20,8 +20,8 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 if (ENABLE_VULKAN_VALIDATION_LAYERS)
-        message("Enable Vulkan Validation Layers")
-        target_compile_definitions(${TARGET_NAME} PUBLIC GAL_ENABLE_VULKAN_VALIDATION_LAYERS=1)
+    message("Enable Vulkan Validation Layers")
+    target_compile_definitions(${TARGET_NAME} PUBLIC GAL_ENABLE_VULKAN_VALIDATION_LAYERS=1)
 endif ()
 
 # Link dependencies
@@ -29,6 +29,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC ${Vulkan_LIBRARIES})
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog)
+target_link_libraries(${TARGET_NAME} PUBLIC VulkanMemoryAllocator)
 
 target_include_directories(
         ${TARGET_NAME}

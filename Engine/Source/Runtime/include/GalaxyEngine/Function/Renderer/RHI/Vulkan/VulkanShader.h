@@ -1,3 +1,9 @@
+//
+// VulkanShader.h
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 12:08.
+//
+
 #pragma once
 
 #include "GalaxyEngine/Core/Base.h"
@@ -17,6 +23,6 @@ namespace Galaxy
         void CreateShaderModule(const std::vector<char>& shaderCode);
 
     private:
-        VkShaderModule      m_ShaderModule;
+        VkShaderModule m_ShaderModule;
     };
 } // namespace Galaxy

@@ -2,8 +2,8 @@
 
 #include "GalaxyEngine/Core/Base.h"
 #include "GalaxyEngine/Core/Event/ApplicationEvent.h"
-#include "GalaxyEngine/Core/Macro.h"
 #include "GalaxyEngine/Core/Layer/LayerStack.h"
+#include "GalaxyEngine/Core/Macro.h"
 
 namespace Galaxy
 {

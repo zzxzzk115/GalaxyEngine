@@ -1,3 +1,9 @@
+//
+// VulkanShader.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 15:24.
+//
+
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanShader.h"
 #include "GalaxyEngine/Core/FileSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
@@ -12,7 +18,10 @@ namespace Galaxy
         CreateShaderModule(shaderCode);
     }
 
-    VulkanShader::~VulkanShader() { vkDestroyShaderModule(g_VulkanGraphicsContextPtr->Device, m_ShaderModule, nullptr); }
+    VulkanShader::~VulkanShader()
+    {
+        vkDestroyShaderModule(g_VulkanGraphicsContextPtr->Device, m_ShaderModule, nullptr);
+    }
 
     void VulkanShader::CreateShaderModule(const std::vector<char>& shaderCode)
     {

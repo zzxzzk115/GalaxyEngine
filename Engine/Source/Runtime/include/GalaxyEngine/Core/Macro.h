@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GalaxyEngine/Core/LoggerSystem.h"
 #include "GalaxyEngine/Core/FileSystem.h"
+#include "GalaxyEngine/Core/LoggerSystem.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 #include "GalaxyEngine/Platform/Platform.h"
 

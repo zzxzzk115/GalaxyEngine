@@ -1,3 +1,9 @@
+//
+// VulkanGraphicsContext.h
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 12:11.
+//
+
 #pragma once
 
 #include "GalaxyEngine/Function/Renderer/RHI/RHIGraphicsContext.h"
@@ -50,8 +56,8 @@ namespace Galaxy
         std::vector<VkSemaphore> RenderFinishedSemaphores;
         std::vector<VkFence>     InFlightFences;
 
-        uint32_t CurrentFrame = 0;
-        bool FrameBufferResized = false;
+        uint32_t CurrentFrame       = 0;
+        bool     FrameBufferResized = false;
 
     private:
         void CreateInstance();

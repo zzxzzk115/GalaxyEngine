@@ -1,3 +1,9 @@
+//
+// VulkanGraphicsContext.cpp
+//
+// Created or modified by Kexuan Zhang on 2023/10/16 15:24.
+//
+
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanGraphicsContext.h"
 #include "GalaxyEngine/Core/Application.h"
 #include "GalaxyEngine/Core/Macro.h"
@@ -381,8 +387,8 @@ namespace Galaxy
 
     void VulkanGraphicsContext::CreateGraphicsPipeline()
     {
-        auto vertextShaderModule  = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.vert.spv"));
-        auto fragmentShaderModule = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.frag.spv"));
+        auto vertextShaderModule  = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.vert.spv").string());
+        auto fragmentShaderModule = Galaxy::VulkanShader(GAL_RELATIVE_PATH("Resources/Shaders/spv/triangle.frag.spv").string());
 
         VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
         vertShaderStageInfo.sType                           = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
