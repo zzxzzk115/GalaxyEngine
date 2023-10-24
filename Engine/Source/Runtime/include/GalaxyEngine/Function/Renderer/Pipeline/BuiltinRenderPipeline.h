@@ -6,17 +6,13 @@
 
 #pragma once
 
-#include "GalaxyEngine/Function/Renderer/Pipeline/RenderPipeline.h"
+#include "GalaxyEngine/Function/Renderer/Pipeline/RenderPipelineBase.h"
 
 namespace Galaxy
 {
-    class BuiltinRenderPipeline : public RenderPipeline
+    class BuiltinRenderPipeline : public RenderPipelineBase
     {
     public:
-        virtual void Init() override;
-        virtual void Shutdown() override;
-
-        virtual void ForwardRender() override;
-        virtual void DeferredRender() override;
+        virtual void Initialize(RenderPipelineInitInfo initInfo) override final;
     };
 } // namespace Galaxy

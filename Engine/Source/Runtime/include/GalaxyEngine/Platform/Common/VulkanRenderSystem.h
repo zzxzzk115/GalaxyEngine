@@ -7,10 +7,13 @@
 #pragma once
 
 #include "GalaxyEngine/Function/Renderer/RenderSystem.h"
-#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanRHI.h"
 
 namespace Galaxy
 {
+    class RHI;
+    class GUIBackend;
+    class RenderPipelineBase;
+
     class VulkanRenderSystem : public RenderSystem
     {
     public:
@@ -20,7 +23,10 @@ namespace Galaxy
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
+        void InitializeUIRenderBackend(Ref<GUIBackend> guiBackend);
+
     private:
-        Ref<VulkanRHI> m_RHI;
+        Ref<RHI> m_RHI;
+        Ref<RenderPipelineBase> m_RenderPipeline;
     };
 } // namespace Galaxy

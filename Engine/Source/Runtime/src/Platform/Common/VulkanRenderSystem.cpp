@@ -5,6 +5,10 @@
 //
 
 #include "GalaxyEngine/Platform/Common/VulkanRenderSystem.h"
+#include "GalaxyEngine/Function/Renderer/Pipeline/BuiltinRenderPipeline.h"
+#include "GalaxyEngine/Function/Renderer/Pipeline/RenderPipelineBase.h"
+#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanRHI.h"
+#include "GalaxyEngine/Function/GUI/GUIBackend.h"
 
 namespace Galaxy
 {
@@ -15,6 +19,13 @@ namespace Galaxy
         rhiInitInfo.WindowSys = initInfo.WindowSys;
         m_RHI = CreateRef<VulkanRHI>();
         m_RHI->Initialize(rhiInitInfo);
+
+        // 2. Init Render Pipeline
+        RenderPipelineInitInfo pipelineInitInfo;
+
+        m_RenderPipeline        = CreateRef<BuiltinRenderPipeline>();
+        m_RenderPipeline->m_RHI = m_RHI;
+        m_RenderPipeline->Initialize(pipelineInitInfo);
     }
 
     void VulkanRenderSystem::Release()
@@ -24,8 +35,10 @@ namespace Galaxy
 
     Ref<RHI> VulkanRenderSystem::GetRHI() { return m_RHI; }
 
-    void VulkanRenderSystem::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-    {
+    void VulkanRenderSystem::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {}
 
+    void VulkanRenderSystem::InitializeUIRenderBackend(Ref<GUIBackend> guiBackend)
+    {
+        m_RenderPipeline->InitializeUIRenderBackend(guiBackend);
     }
 } // namespace Galaxy

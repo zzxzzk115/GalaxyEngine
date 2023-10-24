@@ -106,3 +106,5 @@
         GAL_CORE_ERROR(errorMessage); \
         return false; \
     }
+
+#define FlOAT_NUMBER_EPSILON 1e-6
