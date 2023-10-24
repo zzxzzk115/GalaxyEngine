@@ -6,14 +6,19 @@
 
 #pragma once
 
+#include "GalaxyEngine/Core/Base.h"
 #include "GalaxyEngine/Function/Renderer/RHI/RHIStruct.h"
 
 #include <vk_mem_alloc.h>
 
 namespace Galaxy
 {
+    class WindowSystem;
+
     struct RHIInitInfo
-    {};
+    {
+        Ref<WindowSystem> WindowSys;
+    };
 
     class RHI
     {
@@ -35,12 +40,12 @@ namespace Galaxy
         virtual void        CreateFramebufferImageAndView()                                                        = 0;
         virtual RHISampler* GetOrCreateDefaultSampler(RHIDefaultSamplerType type)                                  = 0;
         virtual RHISampler* GetOrCreateMipmapSampler(uint32_t width, uint32_t height)                              = 0;
-        virtual RHIShader*  CreateShaderModule(const std::vector<unsigned char>& shaderCode)                      = 0;
+        virtual RHIShader*  CreateShaderModule(const std::vector<unsigned char>& shaderCode)                       = 0;
         virtual void        CreateBuffer(RHIDeviceSize          size,
                                          RHIBufferUsageFlags    usage,
                                          RHIMemoryPropertyFlags properties,
                                          RHIBuffer*&            buffer,
-                                         RHIDeviceMemory*&      bufferMemory)                                          = 0;
+                                         RHIDeviceMemory*&      bufferMemory)                                           = 0;
         virtual void        CreateBufferAndInitialize(RHIBufferUsageFlags    usage,
                                                       RHIMemoryPropertyFlags properties,
                                                       RHIBuffer*&            buffer,
@@ -83,7 +88,7 @@ namespace Galaxy
                                             RHIImageViewType    viewType,
                                             uint32_t            layoutCount,
                                             uint32_t            miplevels,
-                                            RHIImageView*&      imageView)                                             = 0;
+                                            RHIImageView*&      imageView)                                              = 0;
         virtual void        CreateGlobalImage(RHIImage*&     image,
                                               RHIImageView*& imageView,
                                               VmaAllocation& imageAllocation,
@@ -243,10 +248,10 @@ namespace Galaxy
         virtual void                     SetCurrentFrameIndex(uint8_t index)                                   = 0;
 
         // command write
-        virtual RHICommandBuffer* BeginSingleTimeCommands()                                                         = 0;
+        virtual RHICommandBuffer* BeginSingleTimeCommands()                                                        = 0;
         virtual void              EndSingleTimeCommands(RHICommandBuffer* commandBuffer)                           = 0;
-        virtual bool              PrepareBeforePass(std::function<void()> passUpdateAfterRecreateSwapchain)         = 0;
-        virtual void              SubmitRendering(std::function<void()> passUpdateAfterRecreateSwapchain)           = 0;
+        virtual bool              PrepareBeforePass(std::function<void()> passUpdateAfterRecreateSwapchain)        = 0;
+        virtual void              SubmitRendering(std::function<void()> passUpdateAfterRecreateSwapchain)          = 0;
         virtual void              PushEvent(RHICommandBuffer* commondBuffer, const char* name, const float* color) = 0;
         virtual void              PopEvent(RHICommandBuffer* commondBuffer)                                        = 0;
 

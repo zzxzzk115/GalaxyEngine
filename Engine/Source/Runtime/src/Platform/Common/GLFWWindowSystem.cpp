@@ -56,9 +56,6 @@ namespace Galaxy
         // glfwSetWindowIcon(m_Window, 1, images);
         // buffer.Release();
 
-        m_GraphicsContext = RHIGraphicsContext::Create();
-        m_GraphicsContext->Init(m_Window);
-
         glfwSetWindowUserPointer(m_Window, &m_Data);
 
         // Set GLFW callbacks
@@ -142,8 +139,6 @@ namespace Galaxy
 
     void GLFWWindowSystem::Shutdown()
     {
-        m_GraphicsContext->Release();
-
         glfwDestroyWindow(m_Window);
         --s_glfwWindowCount;
 

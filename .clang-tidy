@@ -183,6 +183,8 @@ CheckOptions:
     value: m_
   - key: readability-identifier-naming.PublicMemberCase
     value: CamelCase
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: CamelCase
   - key: readability-identifier-naming.MethodCase
     value: CamelCase
   - key: readability-identifier-naming.PrivateMethodPrefix

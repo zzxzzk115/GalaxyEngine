@@ -7,7 +7,6 @@
 #pragma once
 
 #include "GalaxyEngine/Core/WindowSystem.h"
-#include "GalaxyEngine/Function/Renderer/RHI/RHIGraphicsContext.h"
 #include <GLFW/glfw3.h>
 
 namespace Galaxy
@@ -34,7 +33,6 @@ namespace Galaxy
 
     private:
         GLFWwindow*               m_Window;
-        Scope<RHIGraphicsContext> m_GraphicsContext;
 
         struct WindowData
         {

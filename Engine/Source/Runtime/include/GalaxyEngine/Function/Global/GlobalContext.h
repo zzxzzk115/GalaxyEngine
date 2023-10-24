@@ -15,6 +15,11 @@ namespace Galaxy
     class WindowSystem;
     class RenderSystem;
 
+    struct RuntimeGlobalContextInitInfo
+    {
+        std::string AppName = "Galaxy Application";
+    };
+
     struct RuntimeGlobalContext
     {
         Ref<LoggerSystem> LoggerSys;
@@ -23,7 +28,7 @@ namespace Galaxy
         Ref<RenderSystem> RenderSys;
 
     public:
-        void StartSystems();
+        void StartSystems(RuntimeGlobalContextInitInfo initInfo);
         void ShutdownSystems();
     };
 

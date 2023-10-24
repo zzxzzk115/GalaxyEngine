@@ -12,10 +12,10 @@
 
 namespace Galaxy
 {
-/////////////////////////////////////////////////
-#define RHI_DELETE_PTR(x) \
-    delete (x); \
-    (x) = nullptr;
+    /////////////////////////////////////////////////
+    #define RHI_DELETE_PTR(x) \
+        delete x; \
+        x = nullptr;
 
     ////////////////////class////////////////////////
     class RHIBuffer
@@ -156,1032 +156,1026 @@ namespace Galaxy
     ////////////////////struct declaration////////////////////////
     struct RHIMemoryBarrier
     {
-        RHIStructureType SType;
-        const void*      PNext;
-        RHIAccessFlags   SrcAccessMask;
-        RHIAccessFlags   DstAccessMask;
+        RHIStructureType sType;
+        const void*      pNext;
+        RHIAccessFlags   srcAccessMask;
+        RHIAccessFlags   dstAccessMask;
     };
 
     struct RHICopyDescriptorSet
     {
-        RHIStructureType  SType;
-        const void*       PNext;
-        RHIDescriptorSet* SrcSet;
-        uint32_t          SrcBinding;
-        uint32_t          SrcArrayElement;
-        RHIDescriptorSet* DstSet;
-        uint32_t          DstBinding;
-        uint32_t          DstArrayElement;
-        uint32_t          DescriptorCount;
+        RHIStructureType  sType;
+        const void*       pNext;
+        RHIDescriptorSet* srcSet;
+        uint32_t          srcBinding;
+        uint32_t          srcArrayElement;
+        RHIDescriptorSet* dstSet;
+        uint32_t          dstBinding;
+        uint32_t          dstArrayElement;
+        uint32_t          descriptorCount;
     };
 
     struct RHIDescriptorImageInfo
     {
-        RHISampler*    Sampler;
-        RHIImageView*  ImageView;
-        RHIImageLayout ImageLayout;
+        RHISampler*    sampler;
+        RHIImageView*  imageView;
+        RHIImageLayout imageLayout;
     };
 
     struct RHIDescriptorBufferInfo
     {
-        RHIBuffer*    Buffer;
-        RHIDeviceSize Offset;
-        RHIDeviceSize Range;
+        RHIBuffer*    buffer;
+        RHIDeviceSize offset;
+        RHIDeviceSize range;
     };
 
     struct RHIOffset2D
     {
-        int32_t X;
-        int32_t Y;
+        int32_t x;
+        int32_t y;
     };
 
     struct RHISpecializationMapEntry
     {
-        uint32_t ConstantId;
-        uint32_t Offset;
-        size_t   Size;
+        uint32_t constantID;
+        uint32_t offset;
+        size_t   size;
     };
 
     struct RHIBufferMemoryBarrier
     {
-        RHIStructureType SType;
-        const void*      PNext;
-        RHIAccessFlags   SrcAccessMask;
-        RHIAccessFlags   DstAccessMask;
-        uint32_t         SrcQueueFamilyIndex;
-        uint32_t         DstQueueFamilyIndex;
-        RHIBuffer*       Buffer;
-        RHIDeviceSize    Offset;
-        RHIDeviceSize    Size;
+        RHIStructureType sType;
+        const void*      pNext;
+        RHIAccessFlags   srcAccessMask;
+        RHIAccessFlags   dstAccessMask;
+        uint32_t         srcQueueFamilyIndex;
+        uint32_t         dstQueueFamilyIndex;
+        RHIBuffer*       buffer;
+        RHIDeviceSize    offset;
+        RHIDeviceSize    size;
     };
 
     struct RHIImageSubresourceRange
     {
-        RHIImageAspectFlags AspectMask;
-        uint32_t            BaseMipLevel;
-        uint32_t            LevelCount;
-        uint32_t            BaseArrayLayer;
-        uint32_t            LayerCount;
+        RHIImageAspectFlags aspectMask;
+        uint32_t            baseMipLevel;
+        uint32_t            levelCount;
+        uint32_t            baseArrayLayer;
+        uint32_t            layerCount;
     };
 
     struct RHIImageMemoryBarrier
     {
-        RHIStructureType         SType;
-        const void*              PNext;
-        RHIAccessFlags           SrcAccessMask;
-        RHIAccessFlags           DstAccessMask;
-        RHIImageLayout           OldLayout;
-        RHIImageLayout           NewLayout;
-        uint32_t                 SrcQueueFamilyIndex;
-        uint32_t                 DstQueueFamilyIndex;
-        RHIImage*                Image;
-        RHIImageSubresourceRange SubresourceRange;
+        RHIStructureType         sType;
+        const void*              pNext;
+        RHIAccessFlags           srcAccessMask;
+        RHIAccessFlags           dstAccessMask;
+        RHIImageLayout           oldLayout;
+        RHIImageLayout           newLayout;
+        uint32_t                 srcQueueFamilyIndex;
+        uint32_t                 dstQueueFamilyIndex;
+        RHIImage*                image;
+        RHIImageSubresourceRange subresourceRange;
     };
 
     struct RHIExtent2D
     {
-        uint32_t Width;
-        uint32_t Height;
+        uint32_t width;
+        uint32_t height;
     };
 
     struct RHIExtent3D
     {
-        uint32_t Width;
-        uint32_t Height;
-        uint32_t Depth;
+        uint32_t width;
+        uint32_t height;
+        uint32_t depth;
     };
 
     struct RHIApplicationInfo
     {
-        RHIStructureType SType;
-        const void*      PNext;
-        const char*      PApplicationName;
-        uint32_t         ApplicationVersion;
-        const char*      PEngineName;
-        uint32_t         EngineVersion;
-        uint32_t         ApiVersion;
+        RHIStructureType sType;
+        const void*      pNext;
+        const char*      pApplicationName;
+        uint32_t         applicationVersion;
+        const char*      pEngineName;
+        uint32_t         engineVersion;
+        uint32_t         apiVersion;
     };
 
     struct RHIAttachmentDescription
     {
-        RHIAttachmentDescriptionFlags Flags;
-        RHIFormat                     Format;
-        RHISampleCountFlagBits        Samples;
-        RHIAttachmentLoadOp           LoadOp;
-        RHIAttachmentStoreOp          StoreOp;
-        RHIAttachmentLoadOp           StencilLoadOp;
-        RHIAttachmentStoreOp          StencilStoreOp;
-        RHIImageLayout                InitialLayout;
-        RHIImageLayout                FinalLayout;
+        RHIAttachmentDescriptionFlags flags;
+        RHIFormat                     format;
+        RHISampleCountFlagBits        samples;
+        RHIAttachmentLoadOp           loadOp;
+        RHIAttachmentStoreOp          storeOp;
+        RHIAttachmentLoadOp           stencilLoadOp;
+        RHIAttachmentStoreOp          stencilStoreOp;
+        RHIImageLayout                initialLayout;
+        RHIImageLayout                finalLayout;
     };
 
     struct RHIBufferCopy
     {
-        RHIDeviceSize SrcOffset;
-        RHIDeviceSize DstOffset;
-        RHIDeviceSize Size;
+        RHIDeviceSize srcOffset;
+        RHIDeviceSize dstOffset;
+        RHIDeviceSize size;
     };
 
     struct RHIBufferCreateInfo
     {
-        RHIStructureType     SType;
-        const void*          PNext;
-        RHIBufferCreateFlags Flags;
-        RHIDeviceSize        Size;
-        RHIBufferUsageFlags  Usage;
-        RHISharingMode       SharingMode;
-        uint32_t             QueueFamilyIndexCount;
-        const uint32_t*      PQueueFamilyIndices;
+        RHIStructureType     sType;
+        const void*          pNext;
+        RHIBufferCreateFlags flags;
+        RHIDeviceSize        size;
+        RHIBufferUsageFlags  usage;
+        RHISharingMode       sharingMode;
+        uint32_t             queueFamilyIndexCount;
+        const uint32_t*      pQueueFamilyIndices;
     };
 
     struct RHIOffset3D
     {
-        int32_t X;
-        int32_t Y;
-        int32_t Z;
+        int32_t x;
+        int32_t y;
+        int32_t z;
     };
 
     struct RHIImageSubresourceLayers
     {
-        RHIImageAspectFlags AspectMask;
-        uint32_t            MipLevel;
-        uint32_t            BaseArrayLayer;
-        uint32_t            LayerCount;
+        RHIImageAspectFlags aspectMask;
+        uint32_t            mipLevel;
+        uint32_t            baseArrayLayer;
+        uint32_t            layerCount;
     };
 
     struct RHIBufferImageCopy
     {
-        RHIDeviceSize             BufferOffset;
-        uint32_t                  BufferRowLength;
-        uint32_t                  BufferImageHeight;
-        RHIImageSubresourceLayers ImageSubresource;
-        RHIOffset3D               ImageOffset;
-        RHIExtent3D               ImageExtent;
+        RHIDeviceSize             bufferOffset;
+        uint32_t                  bufferRowLength;
+        uint32_t                  bufferImageHeight;
+        RHIImageSubresourceLayers imageSubresource;
+        RHIOffset3D               imageOffset;
+        RHIExtent3D               imageExtent;
     };
 
     struct RHICommandBufferAllocateInfo
     {
-        RHIStructureType      SType;
-        const void*           PNext;
-        RHICommandPool*       CommandPool;
-        RHICommandBufferLevel Level;
-        uint32_t              CommandBufferCount;
+        RHIStructureType      sType;
+        const void*           pNext;
+        RHICommandPool*       commandPool;
+        RHICommandBufferLevel level;
+        uint32_t              commandBufferCount;
     };
 
     struct RHICommandBufferBeginInfo
     {
-        RHIStructureType                       SType;
-        const void*                            PNext;
-        RHICommandBufferUsageFlags             Flags;
-        const RHICommandBufferInheritanceInfo* PInheritanceInfo;
+        RHIStructureType                       sType;
+        const void*                            pNext;
+        RHICommandBufferUsageFlags             flags;
+        const RHICommandBufferInheritanceInfo* pInheritanceInfo;
     };
 
     struct RHICommandBufferInheritanceInfo
     {
-        RHIStructureType               SType;
-        const void*                    PNext;
-        RHIRenderPass*                 RenderPass;
-        uint32_t                       Subpass;
-        RHIFramebuffer*                Framebuffer;
-        RHIBool32                      OcclusionQueryEnable;
-        RHIQueryControlFlags           QueryFlags;
-        RHIQueryPipelineStatisticFlags PipelineStatistics;
+        RHIStructureType               sType;
+        const void*                    pNext;
+        RHIRenderPass*                 renderPass;
+        uint32_t                       subpass;
+        RHIFramebuffer*                framebuffer;
+        RHIBool32                      occlusionQueryEnable;
+        RHIQueryControlFlags           queryFlags;
+        RHIQueryPipelineStatisticFlags pipelineStatistics;
     };
 
     struct RHICommandPoolCreateInfo
     {
-        RHIStructureType          SType;
-        const void*               PNext;
-        RHICommandPoolCreateFlags Flags;
-        uint32_t                  QueueFamilyIndex;
+        RHIStructureType          sType;
+        const void*               pNext;
+        RHICommandPoolCreateFlags flags;
+        uint32_t                  queueFamilyIndex;
     };
 
     struct RHIDescriptorPoolSize
     {
-        RHIDescriptorType Type;
-        uint32_t          DescriptorCount;
+        RHIDescriptorType type;
+        uint32_t          descriptorCount;
     };
 
     struct RHIDescriptorPoolCreateInfo
     {
-        RHIStructureType             SType;
-        const void*                  PNext;
-        RHIDescriptorPoolCreateFlags Flags;
-        uint32_t                     MaxSets;
-        uint32_t                     PoolSizeCount;
-        const RHIDescriptorPoolSize* PPoolSizes;
+        RHIStructureType             sType;
+        const void*                  pNext;
+        RHIDescriptorPoolCreateFlags flags;
+        uint32_t                     maxSets;
+        uint32_t                     poolSizeCount;
+        const RHIDescriptorPoolSize* pPoolSizes;
     };
 
     struct RHIDescriptorSetAllocateInfo
     {
-        RHIStructureType                     SType;
-        const void*                          PNext;
-        RHIDescriptorPool*                   DescriptorPool;
-        uint32_t                             DescriptorSetCount;
-        const RHIDescriptorSetLayout* const* PSetLayouts;
+        RHIStructureType                     sType;
+        const void*                          pNext;
+        RHIDescriptorPool*                   descriptorPool;
+        uint32_t                             descriptorSetCount;
+        const RHIDescriptorSetLayout* const* pSetLayouts;
     };
 
     struct RHIDescriptorSetLayoutBinding
     {
-        uint32_t            Binding;
-        RHIDescriptorType   DescriptorType;
-        uint32_t            DescriptorCount;
-        RHIShaderStageFlags StageFlags;
-        RHISampler* const*  PImmutableSamplers = nullptr;
+        uint32_t            binding;
+        RHIDescriptorType   descriptorType;
+        uint32_t            descriptorCount;
+        RHIShaderStageFlags stageFlags;
+        RHISampler* const*  pImmutableSamplers = nullptr;
     };
 
     struct RHIDescriptorSetLayoutCreateInfo
     {
-        RHIStructureType                     SType;
-        const void*                          PNext;
-        RHIDescriptorSetLayoutCreateFlags    Flags;
-        uint32_t                             BindingCount;
-        const RHIDescriptorSetLayoutBinding* PBindings;
+        RHIStructureType                     sType;
+        const void*                          pNext;
+        RHIDescriptorSetLayoutCreateFlags    flags;
+        uint32_t                             bindingCount;
+        const RHIDescriptorSetLayoutBinding* pBindings;
     };
 
     struct RHIDeviceCreateInfo
     {
-        RHIStructureType                  SType;
-        const void*                       PNext;
-        RHIDeviceCreateFlags              Flags;
-        uint32_t                          QueueCreateInfoCount;
-        const RHIDeviceQueueCreateInfo**  PQueueCreateInfos;
-        uint32_t                          EnabledLayerCount;
-        const char* const*                PpEnabledLayerNames;
-        uint32_t                          EnabledExtensionCount;
-        const char* const*                PpEnabledExtensionNames;
-        const RHIPhysicalDeviceFeatures** PEnabledFeatures;
+        RHIStructureType                  sType;
+        const void*                       pNext;
+        RHIDeviceCreateFlags              flags;
+        uint32_t                          queueCreateInfoCount;
+        const RHIDeviceQueueCreateInfo**  pQueueCreateInfos;
+        uint32_t                          enabledLayerCount;
+        const char* const*                ppEnabledLayerNames;
+        uint32_t                          enabledExtensionCount;
+        const char* const*                ppEnabledExtensionNames;
+        const RHIPhysicalDeviceFeatures** pEnabledFeatures;
     };
 
     struct RHIDeviceQueueCreateInfo
     {
-        RHIStructureType          SType;
-        const void*               PNext;
-        RHIDeviceQueueCreateFlags Flags;
-        uint32_t                  QueueFamilyIndex;
-        uint32_t                  QueueCount;
-        const float*              PQueuePriorities;
+        RHIStructureType          sType;
+        const void*               pNext;
+        RHIDeviceQueueCreateFlags flags;
+        uint32_t                  queueFamilyIndex;
+        uint32_t                  queueCount;
+        const float*              pQueuePriorities;
     };
 
     struct RHIExtensionProperties
     {
-        char     ExtensionName[RHI_MAX_EXTENSION_NAME_SIZE];
-        uint32_t SpecVersion;
+        char     extensionName[RHI_MAX_EXTENSION_NAME_SIZE];
+        uint32_t specVersion;
     };
 
     struct RHIFenceCreateInfo
     {
-        RHIStructureType    SType;
-        const void*         PNext;
-        RHIFenceCreateFlags Flags;
+        RHIStructureType    sType;
+        const void*         pNext;
+        RHIFenceCreateFlags flags;
     };
 
     struct RHIFormatProperties
     {
-        RHIFormatFeatureFlags LinearTilingFeatures;
-        RHIFormatFeatureFlags OptimalTilingFeatures;
-        RHIFormatFeatureFlags BufferFeatures;
+        RHIFormatFeatureFlags linearTilingFeatures;
+        RHIFormatFeatureFlags optimalTilingFeatures;
+        RHIFormatFeatureFlags bufferFeatures;
     };
 
     struct RHIFramebufferCreateInfo
     {
-        RHIStructureType          SType;
-        const void*               PNext;
-        RHIFramebufferCreateFlags Flags;
-        RHIRenderPass*            RenderPass;
-        uint32_t                  AttachmentCount;
-        RHIImageView* const*      PAttachments;
-        uint32_t                  Width;
-        uint32_t                  Height;
-        uint32_t                  Layers;
+        RHIStructureType          sType;
+        const void*               pNext;
+        RHIFramebufferCreateFlags flags;
+        RHIRenderPass*            renderPass;
+        uint32_t                  attachmentCount;
+        RHIImageView* const*      pAttachments;
+        uint32_t                  width;
+        uint32_t                  height;
+        uint32_t                  layers;
     };
 
     struct RHIGraphicsPipelineCreateInfo
     {
-        RHIStructureType                               SType;
-        const void*                                    PNext;
-        RHIPipelineCreateFlags                         Flags;
-        uint32_t                                       StageCount;
-        const RHIPipelineShaderStageCreateInfo*        PStages;
-        const RHIPipelineVertexInputStateCreateInfo*   PVertexInputState;
-        const RHIPipelineInputAssemblyStateCreateInfo* PInputAssemblyState;
-        const RHIPipelineTessellationStateCreateInfo*  PTessellationState;
-        const RHIPipelineViewportStateCreateInfo*      PViewportState;
-        const RHIPipelineRasterizationStateCreateInfo* PRasterizationState;
-        const RHIPipelineMultisampleStateCreateInfo*   PMultisampleState;
-        const RHIPipelineDepthStencilStateCreateInfo*  PDepthStencilState;
-        const RHIPipelineColorBlendStateCreateInfo*    PColorBlendState;
-        const RHIPipelineDynamicStateCreateInfo*       PDynamicState;
-        RHIPipelineLayout*                             Layout;
-        RHIRenderPass*                                 RenderPass;
-        uint32_t                                       Subpass;
-        RHIPipeline*                                   BasePipelineHandle;
-        int32_t                                        BasePipelineIndex;
+        RHIStructureType                               sType;
+        const void*                                    pNext;
+        RHIPipelineCreateFlags                         flags;
+        uint32_t                                       stageCount;
+        const RHIPipelineShaderStageCreateInfo*        pStages;
+        const RHIPipelineVertexInputStateCreateInfo*   pVertexInputState;
+        const RHIPipelineInputAssemblyStateCreateInfo* pInputAssemblyState;
+        const RHIPipelineTessellationStateCreateInfo*  pTessellationState;
+        const RHIPipelineViewportStateCreateInfo*      pViewportState;
+        const RHIPipelineRasterizationStateCreateInfo* pRasterizationState;
+        const RHIPipelineMultisampleStateCreateInfo*   pMultisampleState;
+        const RHIPipelineDepthStencilStateCreateInfo*  pDepthStencilState;
+        const RHIPipelineColorBlendStateCreateInfo*    pColorBlendState;
+        const RHIPipelineDynamicStateCreateInfo*       pDynamicState;
+        RHIPipelineLayout*                             layout;
+        RHIRenderPass*                                 renderPass;
+        uint32_t                                       subpass;
+        RHIPipeline*                                   basePipelineHandle;
+        int32_t                                        basePipelineIndex;
     };
 
     struct RHIComputePipelineCreateInfo
     {
-        RHIStructureType                  SType;
-        const void*                       PNext;
-        RHIPipelineCreateFlags            Flags;
-        RHIPipelineShaderStageCreateInfo* PStages;
-        RHIPipelineLayout*                Layout;
-        RHIPipeline*                      BasePipelineHandle;
-        int32_t                           BasePipelineIndex;
+        RHIStructureType                  sType;
+        const void*                       pNext;
+        RHIPipelineCreateFlags            flags;
+        RHIPipelineShaderStageCreateInfo* pStages;
+        RHIPipelineLayout*                layout;
+        RHIPipeline*                      basePipelineHandle;
+        int32_t                           basePipelineIndex;
     };
 
     struct RHIImageBlit
     {
-        RHIImageSubresourceLayers SrcSubresource;
-        RHIOffset3D               SrcOffsets[2];
-        RHIImageSubresourceLayers DstSubresource;
-        RHIOffset3D               DstOffsets[2];
+        RHIImageSubresourceLayers srcSubresource;
+        RHIOffset3D               srcOffsets[2];
+        RHIImageSubresourceLayers dstSubresource;
+        RHIOffset3D               dstOffsets[2];
     };
 
     struct RHIImageCreateInfo
     {
-        RHIStructureType       SType;
-        const void*            PNext;
-        RHIImageCreateFlags    Flags;
-        RHIImageType           ImageType;
-        RHIFormat              Format;
-        RHIExtent3D            Extent;
-        uint32_t               MipLevels;
-        uint32_t               ArrayLayers;
-        RHISampleCountFlagBits Samples;
-        RHIImageTiling         Tiling;
-        RHIImageUsageFlags     Usage;
-        RHISharingMode         SharingMode;
-        uint32_t               QueueFamilyIndexCount;
-        const uint32_t*        PQueueFamilyIndices;
-        RHIImageLayout         InitialLayout;
+        RHIStructureType       sType;
+        const void*            pNext;
+        RHIImageCreateFlags    flags;
+        RHIImageType           imageType;
+        RHIFormat              format;
+        RHIExtent3D            extent;
+        uint32_t               mipLevels;
+        uint32_t               arrayLayers;
+        RHISampleCountFlagBits samples;
+        RHIImageTiling         tiling;
+        RHIImageUsageFlags     usage;
+        RHISharingMode         sharingMode;
+        uint32_t               queueFamilyIndexCount;
+        const uint32_t*        pQueueFamilyIndices;
+        RHIImageLayout         initialLayout;
     };
 
     struct RHIImageFormatProperties
     {
-        RHIExtent3D         MaxExtent;
-        uint32_t            MaxMipLevels;
-        uint32_t            MaxArrayLayers;
-        RHISampleCountFlags SampleCounts;
-        RHIDeviceSize       MaxResourceSize;
+        RHIExtent3D         maxExtent;
+        uint32_t            maxMipLevels;
+        uint32_t            maxArrayLayers;
+        RHISampleCountFlags sampleCounts;
+        RHIDeviceSize       maxResourceSize;
     };
 
     struct RHIComponentMapping
     {
-        RHIComponentSwizzle R;
-        RHIComponentSwizzle G;
-        RHIComponentSwizzle B;
-        RHIComponentSwizzle A;
+        RHIComponentSwizzle r;
+        RHIComponentSwizzle g;
+        RHIComponentSwizzle b;
+        RHIComponentSwizzle a;
     };
 
     struct RHIImageViewCreateInfo
     {
-        RHIStructureType         SType;
-        const void*              PNext;
-        RHIImageViewCreateFlags  Flags;
-        RHIImage*                Image;
-        RHIImageViewType         ViewType;
-        RHIFormat                Format;
-        RHIComponentMapping      Components;
-        RHIImageSubresourceRange SubresourceRange;
+        RHIStructureType         sType;
+        const void*              pNext;
+        RHIImageViewCreateFlags  flags;
+        RHIImage*                image;
+        RHIImageViewType         viewType;
+        RHIFormat                format;
+        RHIComponentMapping      components;
+        RHIImageSubresourceRange subresourceRange;
     };
 
     struct RHIInstanceCreateInfo
     {
-        RHIStructureType           SType;
-        const void*                PNext;
-        RHIInstanceCreateFlags     Flags;
-        const RHIApplicationInfo** PApplicationInfo;
-        uint32_t                   EnabledLayerCount;
-        const char* const*         PpEnabledLayerNames;
-        uint32_t                   EnabledExtensionCount;
-        const char* const*         PpEnabledExtensionNames;
+        RHIStructureType           sType;
+        const void*                pNext;
+        RHIInstanceCreateFlags     flags;
+        const RHIApplicationInfo** pApplicationInfo;
+        uint32_t                   enabledLayerCount;
+        const char* const*         ppEnabledLayerNames;
+        uint32_t                   enabledExtensionCount;
+        const char* const*         ppEnabledExtensionNames;
     };
 
     struct RHILayerProperties
     {
-        char     LayerName[RHI_MAX_EXTENSION_NAME_SIZE];
-        uint32_t SpecVersion;
-        uint32_t ImplementationVersion;
-        char     Description[RHI_MAX_DESCRIPTION_SIZE];
+        char     layerName[RHI_MAX_EXTENSION_NAME_SIZE];
+        uint32_t specVersion;
+        uint32_t implementationVersion;
+        char     description[RHI_MAX_DESCRIPTION_SIZE];
     };
 
     struct RHIMemoryAllocateInfo
     {
-        RHIStructureType SType;
-        const void*      PNext;
-        RHIDeviceSize    AllocationSize;
-        uint32_t         MemoryTypeIndex;
+        RHIStructureType sType;
+        const void*      pNext;
+        RHIDeviceSize    allocationSize;
+        uint32_t         memoryTypeIndex;
     };
 
     struct RHIMemoryHeap
     {
-        RHIDeviceSize      Size;
-        RHIMemoryHeapFlags Flags;
+        RHIDeviceSize      size;
+        RHIMemoryHeapFlags flags;
     };
 
     struct RHIMemoryRequirements
     {
-        RHIDeviceSize Size;
-        RHIDeviceSize Alignment;
-        uint32_t      MemoryTypeBits;
+        RHIDeviceSize size;
+        RHIDeviceSize alignment;
+        uint32_t      memoryTypeBits;
     };
 
     struct RHIMemoryType
     {
-        RHIMemoryPropertyFlags PropertyFlags;
-        uint32_t               HeapIndex;
+        RHIMemoryPropertyFlags propertyFlags;
+        uint32_t               heapIndex;
     };
 
     struct RHIPhysicalDeviceFeatures
     {
-        RHIBool32 RobustBufferAccess;
-        RHIBool32 FullDrawIndexUint32;
-        RHIBool32 ImageCubeArray;
-        RHIBool32 IndependentBlend;
-        RHIBool32 GeometryShader;
-        RHIBool32 TessellationShader;
-        RHIBool32 SampleRateShading;
-        RHIBool32 DualSrcBlend;
-        RHIBool32 LogicOp;
-        RHIBool32 MultiDrawIndirect;
-        RHIBool32 DrawIndirectFirstInstance;
-        RHIBool32 DepthClamp;
-        RHIBool32 DepthBiasClamp;
-        RHIBool32 FillModeNonSolid;
-        RHIBool32 DepthBounds;
-        RHIBool32 WideLines;
-        RHIBool32 LargePoints;
-        RHIBool32 AlphaToOne;
-        RHIBool32 MultiViewport;
-        RHIBool32 SamplerAnisotropy;
-        RHIBool32 TextureCompressionEtC2;
-        RHIBool32 TextureCompressionAstcLdr;
-        RHIBool32 TextureCompressionBc;
-        RHIBool32 OcclusionQueryPrecise;
-        RHIBool32 PipelineStatisticsQuery;
-        RHIBool32 VertexPipelineStoresAndAtomics;
-        RHIBool32 FragmentStoresAndAtomics;
-        RHIBool32 ShaderTessellationAndGeometryPointSize;
-        RHIBool32 ShaderImageGatherExtended;
-        RHIBool32 ShaderStorageImageExtendedFormats;
-        RHIBool32 ShaderStorageImageMultisample;
-        RHIBool32 ShaderStorageImageReadWithoutFormat;
-        RHIBool32 ShaderStorageImageWriteWithoutFormat;
-        RHIBool32 ShaderUniformBufferArrayDynamicIndexing;
-        RHIBool32 ShaderSampledImageArrayDynamicIndexing;
-        RHIBool32 ShaderStorageBufferArrayDynamicIndexing;
-        RHIBool32 ShaderStorageImageArrayDynamicIndexing;
-        RHIBool32 ShaderClipDistance;
-        RHIBool32 ShaderCullDistance;
-        RHIBool32 ShaderFloat64;
-        RHIBool32 ShaderInt64;
-        RHIBool32 ShaderInt16;
-        RHIBool32 ShaderResourceResidency;
-        RHIBool32 ShaderResourceMinLod;
-        RHIBool32 SparseBinding;
-        RHIBool32 SparseResidencyBuffer;
-        RHIBool32 SparseResidencyImage2D;
-        RHIBool32 SparseResidencyImage3D;
-        RHIBool32 SparseResidency2Samples;
-        RHIBool32 SparseResidency4Samples;
-        RHIBool32 SparseResidency8Samples;
-        RHIBool32 SparseResidency16Samples;
-        RHIBool32 SparseResidencyAliased;
-        RHIBool32 VariableMultisampleRate;
-        RHIBool32 InheritedQueries;
+        RHIBool32 robustBufferAccess;
+        RHIBool32 fullDrawIndexUint32;
+        RHIBool32 imageCubeArray;
+        RHIBool32 independentBlend;
+        RHIBool32 geometryShader;
+        RHIBool32 tessellationShader;
+        RHIBool32 sampleRateShading;
+        RHIBool32 dualSrcBlend;
+        RHIBool32 logicOp;
+        RHIBool32 multiDrawIndirect;
+        RHIBool32 drawIndirectFirstInstance;
+        RHIBool32 depthClamp;
+        RHIBool32 depthBiasClamp;
+        RHIBool32 fillModeNonSolid;
+        RHIBool32 depthBounds;
+        RHIBool32 wideLines;
+        RHIBool32 largePoints;
+        RHIBool32 alphaToOne;
+        RHIBool32 multiViewport;
+        RHIBool32 samplerAnisotropy;
+        RHIBool32 textureCompressionETC2;
+        RHIBool32 textureCompressionASTC_LDR;
+        RHIBool32 textureCompressionBC;
+        RHIBool32 occlusionQueryPrecise;
+        RHIBool32 pipelineStatisticsQuery;
+        RHIBool32 vertexPipelineStoresAndAtomics;
+        RHIBool32 fragmentStoresAndAtomics;
+        RHIBool32 shaderTessellationAndGeometryPointSize;
+        RHIBool32 shaderImageGatherExtended;
+        RHIBool32 shaderStorageImageExtendedFormats;
+        RHIBool32 shaderStorageImageMultisample;
+        RHIBool32 shaderStorageImageReadWithoutFormat;
+        RHIBool32 shaderStorageImageWriteWithoutFormat;
+        RHIBool32 shaderUniformBufferArrayDynamicIndexing;
+        RHIBool32 shaderSampledImageArrayDynamicIndexing;
+        RHIBool32 shaderStorageBufferArrayDynamicIndexing;
+        RHIBool32 shaderStorageImageArrayDynamicIndexing;
+        RHIBool32 shaderClipDistance;
+        RHIBool32 shaderCullDistance;
+        RHIBool32 shaderFloat64;
+        RHIBool32 shaderInt64;
+        RHIBool32 shaderInt16;
+        RHIBool32 shaderResourceResidency;
+        RHIBool32 shaderResourceMinLod;
+        RHIBool32 sparseBinding;
+        RHIBool32 sparseResidencyBuffer;
+        RHIBool32 sparseResidencyImage2D;
+        RHIBool32 sparseResidencyImage3D;
+        RHIBool32 sparseResidency2Samples;
+        RHIBool32 sparseResidency4Samples;
+        RHIBool32 sparseResidency8Samples;
+        RHIBool32 sparseResidency16Samples;
+        RHIBool32 sparseResidencyAliased;
+        RHIBool32 variableMultisampleRate;
+        RHIBool32 inheritedQueries;
     };
 
     struct RHIPhysicalDeviceLimits
     {
-        uint32_t            MaxImageDimension1D;
-        uint32_t            MaxImageDimension2D;
-        uint32_t            MaxImageDimension3D;
-        uint32_t            MaxImageDimensionCube;
-        uint32_t            MaxImageArrayLayers;
-        uint32_t            MaxTexelBufferElements;
-        uint32_t            MaxUniformBufferRange;
-        uint32_t            MaxStorageBufferRange;
-        uint32_t            MaxPushConstantsSize;
-        uint32_t            MaxMemoryAllocationCount;
-        uint32_t            MaxSamplerAllocationCount;
-        RHIDeviceSize       BufferImageGranularity;
-        RHIDeviceSize       SparseAddressSpaceSize;
-        uint32_t            MaxBoundDescriptorSets;
-        uint32_t            MaxPerStageDescriptorSamplers;
-        uint32_t            MaxPerStageDescriptorUniformBuffers;
-        uint32_t            MaxPerStageDescriptorStorageBuffers;
-        uint32_t            MaxPerStageDescriptorSampledImages;
-        uint32_t            MaxPerStageDescriptorStorageImages;
-        uint32_t            MaxPerStageDescriptorInputAttachments;
-        uint32_t            MaxPerStageResources;
-        uint32_t            MaxDescriptorSetSamplers;
-        uint32_t            MaxDescriptorSetUniformBuffers;
-        uint32_t            MaxDescriptorSetUniformBuffersDynamic;
-        uint32_t            MaxDescriptorSetStorageBuffers;
-        uint32_t            MaxDescriptorSetStorageBuffersDynamic;
-        uint32_t            MaxDescriptorSetSampledImages;
-        uint32_t            MaxDescriptorSetStorageImages;
-        uint32_t            MaxDescriptorSetInputAttachments;
-        uint32_t            MaxVertexInputAttributes;
-        uint32_t            MaxVertexInputBindings;
-        uint32_t            MaxVertexInputAttributeOffset;
-        uint32_t            MaxVertexInputBindingStride;
-        uint32_t            MaxVertexOutputComponents;
-        uint32_t            MaxTessellationGenerationLevel;
-        uint32_t            MaxTessellationPatchSize;
-        uint32_t            MaxTessellationControlPerVertexInputComponents;
-        uint32_t            MaxTessellationControlPerVertexOutputComponents;
-        uint32_t            MaxTessellationControlPerPatchOutputComponents;
-        uint32_t            MaxTessellationControlTotalOutputComponents;
-        uint32_t            MaxTessellationEvaluationInputComponents;
-        uint32_t            MaxTessellationEvaluationOutputComponents;
-        uint32_t            MaxGeometryShaderInvocations;
-        uint32_t            MaxGeometryInputComponents;
-        uint32_t            MaxGeometryOutputComponents;
-        uint32_t            MaxGeometryOutputVertices;
-        uint32_t            MaxGeometryTotalOutputComponents;
-        uint32_t            MaxFragmentInputComponents;
-        uint32_t            MaxFragmentOutputAttachments;
-        uint32_t            MaxFragmentDualSrcAttachments;
-        uint32_t            MaxFragmentCombinedOutputResources;
-        uint32_t            MaxComputeSharedMemorySize;
-        uint32_t            MaxComputeWorkGroupCount[3];
-        uint32_t            MaxComputeWorkGroupInvocations;
-        uint32_t            MaxComputeWorkGroupSize[3];
-        uint32_t            SubPixelPrecisionBits;
-        uint32_t            SubTexelPrecisionBits;
-        uint32_t            MipmapPrecisionBits;
-        uint32_t            MaxDrawIndexedIndexValue;
-        uint32_t            MaxDrawIndirectCount;
-        float               MaxSamplerLodBias;
-        float               MaxSamplerAnisotropy;
-        uint32_t            MaxViewports;
-        uint32_t            MaxViewportDimensions[2];
-        float               ViewportBoundsRange[2];
-        uint32_t            ViewportSubPixelBits;
-        size_t              MinMemoryMapAlignment;
-        RHIDeviceSize       MinTexelBufferOffsetAlignment;
-        RHIDeviceSize       MinUniformBufferOffsetAlignment;
-        RHIDeviceSize       MinStorageBufferOffsetAlignment;
-        int32_t             MinTexelOffset;
-        uint32_t            MaxTexelOffset;
-        int32_t             MinTexelGatherOffset;
-        uint32_t            MaxTexelGatherOffset;
-        float               MinInterpolationOffset;
-        float               MaxInterpolationOffset;
-        uint32_t            SubPixelInterpolationOffsetBits;
-        uint32_t            MaxFramebufferWidth;
-        uint32_t            MaxFramebufferHeight;
-        uint32_t            MaxFramebufferLayers;
-        RHISampleCountFlags FramebufferColorSampleCounts;
-        RHISampleCountFlags FramebufferDepthSampleCounts;
-        RHISampleCountFlags FramebufferStencilSampleCounts;
-        RHISampleCountFlags FramebufferNoAttachmentsSampleCounts;
-        uint32_t            MaxColorAttachments;
-        RHISampleCountFlags SampledImageColorSampleCounts;
-        RHISampleCountFlags SampledImageIntegerSampleCounts;
-        RHISampleCountFlags SampledImageDepthSampleCounts;
-        RHISampleCountFlags SampledImageStencilSampleCounts;
-        RHISampleCountFlags StorageImageSampleCounts;
-        uint32_t            MaxSampleMaskWords;
-        RHIBool32           TimestampComputeAndGraphics;
-        float               TimestampPeriod;
-        uint32_t            MaxClipDistances;
-        uint32_t            MaxCullDistances;
-        uint32_t            MaxCombinedClipAndCullDistances;
-        uint32_t            DiscreteQueuePriorities;
-        float               PointSizeRange[2];
-        float               LineWidthRange[2];
-        float               PointSizeGranularity;
-        float               LineWidthGranularity;
-        RHIBool32           StrictLines;
-        RHIBool32           StandardSampleLocations;
-        RHIDeviceSize       OptimalBufferCopyOffsetAlignment;
-        RHIDeviceSize       OptimalBufferCopyRowPitchAlignment;
-        RHIDeviceSize       NonCoherentAtomSize;
+        uint32_t            maxImageDimension1D;
+        uint32_t            maxImageDimension2D;
+        uint32_t            maxImageDimension3D;
+        uint32_t            maxImageDimensionCube;
+        uint32_t            maxImageArrayLayers;
+        uint32_t            maxTexelBufferElements;
+        uint32_t            maxUniformBufferRange;
+        uint32_t            maxStorageBufferRange;
+        uint32_t            maxPushConstantsSize;
+        uint32_t            maxMemoryAllocationCount;
+        uint32_t            maxSamplerAllocationCount;
+        RHIDeviceSize       bufferImageGranularity;
+        RHIDeviceSize       sparseAddressSpaceSize;
+        uint32_t            maxBoundDescriptorSets;
+        uint32_t            maxPerStageDescriptorSamplers;
+        uint32_t            maxPerStageDescriptorUniformBuffers;
+        uint32_t            maxPerStageDescriptorStorageBuffers;
+        uint32_t            maxPerStageDescriptorSampledImages;
+        uint32_t            maxPerStageDescriptorStorageImages;
+        uint32_t            maxPerStageDescriptorInputAttachments;
+        uint32_t            maxPerStageResources;
+        uint32_t            maxDescriptorSetSamplers;
+        uint32_t            maxDescriptorSetUniformBuffers;
+        uint32_t            maxDescriptorSetUniformBuffersDynamic;
+        uint32_t            maxDescriptorSetStorageBuffers;
+        uint32_t            maxDescriptorSetStorageBuffersDynamic;
+        uint32_t            maxDescriptorSetSampledImages;
+        uint32_t            maxDescriptorSetStorageImages;
+        uint32_t            maxDescriptorSetInputAttachments;
+        uint32_t            maxVertexInputAttributes;
+        uint32_t            maxVertexInputBindings;
+        uint32_t            maxVertexInputAttributeOffset;
+        uint32_t            maxVertexInputBindingStride;
+        uint32_t            maxVertexOutputComponents;
+        uint32_t            maxTessellationGenerationLevel;
+        uint32_t            maxTessellationPatchSize;
+        uint32_t            maxTessellationControlPerVertexInputComponents;
+        uint32_t            maxTessellationControlPerVertexOutputComponents;
+        uint32_t            maxTessellationControlPerPatchOutputComponents;
+        uint32_t            maxTessellationControlTotalOutputComponents;
+        uint32_t            maxTessellationEvaluationInputComponents;
+        uint32_t            maxTessellationEvaluationOutputComponents;
+        uint32_t            maxGeometryShaderInvocations;
+        uint32_t            maxGeometryInputComponents;
+        uint32_t            maxGeometryOutputComponents;
+        uint32_t            maxGeometryOutputVertices;
+        uint32_t            maxGeometryTotalOutputComponents;
+        uint32_t            maxFragmentInputComponents;
+        uint32_t            maxFragmentOutputAttachments;
+        uint32_t            maxFragmentDualSrcAttachments;
+        uint32_t            maxFragmentCombinedOutputResources;
+        uint32_t            maxComputeSharedMemorySize;
+        uint32_t            maxComputeWorkGroupCount[3];
+        uint32_t            maxComputeWorkGroupInvocations;
+        uint32_t            maxComputeWorkGroupSize[3];
+        uint32_t            subPixelPrecisionBits;
+        uint32_t            subTexelPrecisionBits;
+        uint32_t            mipmapPrecisionBits;
+        uint32_t            maxDrawIndexedIndexValue;
+        uint32_t            maxDrawIndirectCount;
+        float               maxSamplerLodBias;
+        float               maxSamplerAnisotropy;
+        uint32_t            maxViewports;
+        uint32_t            maxViewportDimensions[2];
+        float               viewportBoundsRange[2];
+        uint32_t            viewportSubPixelBits;
+        size_t              minMemoryMapAlignment;
+        RHIDeviceSize       minTexelBufferOffsetAlignment;
+        RHIDeviceSize       minUniformBufferOffsetAlignment;
+        RHIDeviceSize       minStorageBufferOffsetAlignment;
+        int32_t             minTexelOffset;
+        uint32_t            maxTexelOffset;
+        int32_t             minTexelGatherOffset;
+        uint32_t            maxTexelGatherOffset;
+        float               minInterpolationOffset;
+        float               maxInterpolationOffset;
+        uint32_t            subPixelInterpolationOffsetBits;
+        uint32_t            maxFramebufferWidth;
+        uint32_t            maxFramebufferHeight;
+        uint32_t            maxFramebufferLayers;
+        RHISampleCountFlags framebufferColorSampleCounts;
+        RHISampleCountFlags framebufferDepthSampleCounts;
+        RHISampleCountFlags framebufferStencilSampleCounts;
+        RHISampleCountFlags framebufferNoAttachmentsSampleCounts;
+        uint32_t            maxColorAttachments;
+        RHISampleCountFlags sampledImageColorSampleCounts;
+        RHISampleCountFlags sampledImageIntegerSampleCounts;
+        RHISampleCountFlags sampledImageDepthSampleCounts;
+        RHISampleCountFlags sampledImageStencilSampleCounts;
+        RHISampleCountFlags storageImageSampleCounts;
+        uint32_t            maxSampleMaskWords;
+        RHIBool32           timestampComputeAndGraphics;
+        float               timestampPeriod;
+        uint32_t            maxClipDistances;
+        uint32_t            maxCullDistances;
+        uint32_t            maxCombinedClipAndCullDistances;
+        uint32_t            discreteQueuePriorities;
+        float               pointSizeRange[2];
+        float               lineWidthRange[2];
+        float               pointSizeGranularity;
+        float               lineWidthGranularity;
+        RHIBool32           strictLines;
+        RHIBool32           standardSampleLocations;
+        RHIDeviceSize       optimalBufferCopyOffsetAlignment;
+        RHIDeviceSize       optimalBufferCopyRowPitchAlignment;
+        RHIDeviceSize       nonCoherentAtomSize;
     };
 
     struct RHIPhysicalDeviceMemoryProperties
     {
-        uint32_t      MemoryTypeCount;
-        RHIMemoryType MemoryTypes[RHI_MAX_MEMORY_TYPES];
-        uint32_t      MemoryHeapCount;
-        RHIMemoryHeap MemoryHeaps[RHI_MAX_MEMORY_HEAPS];
+        uint32_t      memoryTypeCount;
+        RHIMemoryType memoryTypes[RHI_MAX_MEMORY_TYPES];
+        uint32_t      memoryHeapCount;
+        RHIMemoryHeap memoryHeaps[RHI_MAX_MEMORY_HEAPS];
     };
 
     struct RHIPhysicalDeviceSparseProperties
     {
-        RHIBool32 ResidencyStandard2DBlockShape;
-        RHIBool32 ResidencyStandard2DMultisampleBlockShape;
-        RHIBool32 ResidencyStandard3DBlockShape;
-        RHIBool32 ResidencyAlignedMipSize;
-        RHIBool32 ResidencyNonResidentStrict;
+        RHIBool32 residencyStandard2DBlockShape;
+        RHIBool32 residencyStandard2DMultisampleBlockShape;
+        RHIBool32 residencyStandard3DBlockShape;
+        RHIBool32 residencyAlignedMipSize;
+        RHIBool32 residencyNonResidentStrict;
     };
 
     struct RHIPhysicalDeviceProperties
     {
-        uint32_t                          ApiVersion;
-        uint32_t                          DriverVersion;
-        uint32_t                          VendorId;
-        uint32_t                          DeviceId;
-        RHIPhysicalDeviceType             DeviceType;
-        char                              DeviceName[RHI_MAX_PHYSICAL_DEVICE_NAME_SIZE];
-        uint8_t                           PipelineCacheUuid[RHI_UUID_SIZE];
-        RHIPhysicalDeviceLimits           Limits;
-        RHIPhysicalDeviceSparseProperties SparseProperties;
+        uint32_t                          apiVersion;
+        uint32_t                          driverVersion;
+        uint32_t                          vendorID;
+        uint32_t                          deviceID;
+        RHIPhysicalDeviceType             deviceType;
+        char                              deviceName[RHI_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+        uint8_t                           pipelineCacheUUID[RHI_UUID_SIZE];
+        RHIPhysicalDeviceLimits           limits;
+        RHIPhysicalDeviceSparseProperties sparseProperties;
     };
 
     struct RHIPipelineColorBlendStateCreateInfo
     {
-        RHIStructureType                            SType;
-        const void*                                 PNext;
-        RHIPipelineColorBlendStateCreateFlags       Flags;
-        RHIBool32                                   LogicOpEnable;
-        RHILogicOp                                  LogicOp;
-        uint32_t                                    AttachmentCount;
-        const RHIPipelineColorBlendAttachmentState* PAttachments;
-        float                                       BlendConstants[4];
+        RHIStructureType                            sType;
+        const void*                                 pNext;
+        RHIPipelineColorBlendStateCreateFlags       flags;
+        RHIBool32                                   logicOpEnable;
+        RHILogicOp                                  logicOp;
+        uint32_t                                    attachmentCount;
+        const RHIPipelineColorBlendAttachmentState* pAttachments;
+        float                                       blendConstants[4];
     };
 
     struct RHIStencilOpState
     {
-        RHIStencilOp FailOp;
-        RHIStencilOp PassOp;
-        RHIStencilOp DepthFailOp;
-        RHICompareOp CompareOp;
-        uint32_t     CompareMask;
-        uint32_t     WriteMask;
-        uint32_t     Reference;
+        RHIStencilOp failOp;
+        RHIStencilOp passOp;
+        RHIStencilOp depthFailOp;
+        RHICompareOp compareOp;
+        uint32_t     compareMask;
+        uint32_t     writeMask;
+        uint32_t     reference;
     };
 
     struct RHIPipelineDepthStencilStateCreateInfo
     {
-        RHIStructureType                        SType;
-        const void*                             PNext;
-        RHIPipelineDepthStencilStateCreateFlags Flags;
-        RHIBool32                               DepthTestEnable;
-        RHIBool32                               DepthWriteEnable;
-        RHICompareOp                            DepthCompareOp;
-        RHIBool32                               DepthBoundsTestEnable;
-        RHIBool32                               StencilTestEnable;
-        RHIStencilOpState                       Front;
-        RHIStencilOpState                       Back;
-        float                                   MinDepthBounds;
-        float                                   MaxDepthBounds;
+        RHIStructureType                        sType;
+        const void*                             pNext;
+        RHIPipelineDepthStencilStateCreateFlags flags;
+        RHIBool32                               depthTestEnable;
+        RHIBool32                               depthWriteEnable;
+        RHICompareOp                            depthCompareOp;
+        RHIBool32                               depthBoundsTestEnable;
+        RHIBool32                               stencilTestEnable;
+        RHIStencilOpState                       front;
+        RHIStencilOpState                       back;
+        float                                   minDepthBounds;
+        float                                   maxDepthBounds;
     };
 
     struct RHIPipelineDynamicStateCreateInfo
     {
-        RHIStructureType                   SType;
-        const void*                        PNext;
-        RHIPipelineDynamicStateCreateFlags Flags;
-        uint32_t                           DynamicStateCount;
-        const RHIDynamicState*             PDynamicStates;
+        RHIStructureType                   sType;
+        const void*                        pNext;
+        RHIPipelineDynamicStateCreateFlags flags;
+        uint32_t                           dynamicStateCount;
+        const RHIDynamicState*             pDynamicStates;
     };
 
     struct RHIPipelineInputAssemblyStateCreateInfo
     {
-        RHIStructureType                         SType;
-        const void*                              PNext;
-        RHIPipelineInputAssemblyStateCreateFlags Flags;
-        RHIPrimitiveTopology                     Topology;
-        RHIBool32                                PrimitiveRestartEnable;
+        RHIStructureType                         sType;
+        const void*                              pNext;
+        RHIPipelineInputAssemblyStateCreateFlags flags;
+        RHIPrimitiveTopology                     topology;
+        RHIBool32                                primitiveRestartEnable;
     };
 
     struct RHIPipelineLayoutCreateInfo
     {
-        RHIStructureType               SType;
-        const void*                    PNext;
-        RHIPipelineLayoutCreateFlags   Flags;
-        uint32_t                       SetLayoutCount;
-        RHIDescriptorSetLayout* const* PSetLayouts;
-        uint32_t                       PushConstantRangeCount;
-        const RHIPushConstantRange*    PPushConstantRanges;
+        RHIStructureType               sType;
+        const void*                    pNext;
+        RHIPipelineLayoutCreateFlags   flags;
+        uint32_t                       setLayoutCount;
+        RHIDescriptorSetLayout* const* pSetLayouts;
+        uint32_t                       pushConstantRangeCount;
+        const RHIPushConstantRange*    pPushConstantRanges;
     };
 
     struct RHIPipelineMultisampleStateCreateInfo
     {
-        RHIStructureType                       SType;
-        const void*                            PNext;
-        RHIPipelineMultisampleStateCreateFlags Flags;
-        RHISampleCountFlagBits                 RasterizationSamples;
-        RHIBool32                              SampleShadingEnable;
-        float                                  MinSampleShading;
-        const RHISampleMask**                  PSampleMask;
-        RHIBool32                              AlphaToCoverageEnable;
-        RHIBool32                              AlphaToOneEnable;
+        RHIStructureType                       sType;
+        const void*                            pNext;
+        RHIPipelineMultisampleStateCreateFlags flags;
+        RHISampleCountFlagBits                 rasterizationSamples;
+        RHIBool32                              sampleShadingEnable;
+        float                                  minSampleShading;
+        const RHISampleMask**                  pSampleMask;
+        RHIBool32                              alphaToCoverageEnable;
+        RHIBool32                              alphaToOneEnable;
     };
 
     struct RHIPipelineRasterizationStateCreateInfo
     {
-        RHIStructureType                         SType;
-        const void*                              PNext;
-        RHIPipelineRasterizationStateCreateFlags Flags;
-        RHIBool32                                DepthClampEnable;
-        RHIBool32                                RasterizerDiscardEnable;
-        RHIPolygonMode                           PolygonMode;
-        RHICullModeFlags                         CullMode;
-        RHIFrontFace                             FrontFace;
-        RHIBool32                                DepthBiasEnable;
-        float                                    DepthBiasConstantFactor;
-        float                                    DepthBiasClamp;
-        float                                    DepthBiasSlopeFactor;
-        float                                    LineWidth;
+        RHIStructureType                         sType;
+        const void*                              pNext;
+        RHIPipelineRasterizationStateCreateFlags flags;
+        RHIBool32                                depthClampEnable;
+        RHIBool32                                rasterizerDiscardEnable;
+        RHIPolygonMode                           polygonMode;
+        RHICullModeFlags                         cullMode;
+        RHIFrontFace                             frontFace;
+        RHIBool32                                depthBiasEnable;
+        float                                    depthBiasConstantFactor;
+        float                                    depthBiasClamp;
+        float                                    depthBiasSlopeFactor;
+        float                                    lineWidth;
     };
 
     struct RHIPipelineShaderStageCreateInfo
     {
-        RHIStructureType                  SType;
-        const void*                       PNext;
-        RHIPipelineShaderStageCreateFlags Flags;
-        RHIShaderStageFlagBits            Stage;
-        RHIShader*                        Module;
-        const char*                       PName;
-        const RHISpecializationInfo*      PSpecializationInfo;
+        RHIStructureType                  sType;
+        const void*                       pNext;
+        RHIPipelineShaderStageCreateFlags flags;
+        RHIShaderStageFlagBits            stage;
+        RHIShader*                        module;
+        const char*                       pName;
+        const RHISpecializationInfo*      pSpecializationInfo;
     };
 
     struct RHIPipelineTessellationStateCreateInfo
     {
-        RHIStructureType                        SType;
-        const void*                             PNext;
-        RHIPipelineTessellationStateCreateFlags Flags;
-        uint32_t                                PatchControlPoints;
+        RHIStructureType                        sType;
+        const void*                             pNext;
+        RHIPipelineTessellationStateCreateFlags flags;
+        uint32_t                                patchControlPoints;
     };
 
     struct RHIPipelineVertexInputStateCreateInfo
     {
-        RHIStructureType                          SType;
-        const void*                               PNext;
-        RHIPipelineVertexInputStateCreateFlags    Flags;
-        uint32_t                                  VertexBindingDescriptionCount;
-        const RHIVertexInputBindingDescription*   PVertexBindingDescriptions;
-        uint32_t                                  VertexAttributeDescriptionCount;
-        const RHIVertexInputAttributeDescription* PVertexAttributeDescriptions;
+        RHIStructureType                          sType;
+        const void*                               pNext;
+        RHIPipelineVertexInputStateCreateFlags    flags;
+        uint32_t                                  vertexBindingDescriptionCount;
+        const RHIVertexInputBindingDescription*   pVertexBindingDescriptions;
+        uint32_t                                  vertexAttributeDescriptionCount;
+        const RHIVertexInputAttributeDescription* pVertexAttributeDescriptions;
     };
 
     struct RHIPipelineViewportStateCreateInfo
     {
-        RHIStructureType                    SType;
-        const void*                         PNext;
-        RHIPipelineViewportStateCreateFlags Flags;
-        uint32_t                            ViewportCount;
-        const RHIViewport*                  PViewports;
-        uint32_t                            ScissorCount;
-        const RHIRect2D*                    PScissors;
+        RHIStructureType                    sType;
+        const void*                         pNext;
+        RHIPipelineViewportStateCreateFlags flags;
+        uint32_t                            viewportCount;
+        const RHIViewport*                  pViewports;
+        uint32_t                            scissorCount;
+        const RHIRect2D*                    pScissors;
     };
 
     struct RHIPushConstantRange
     {
-        RHIShaderStageFlags StageFlags;
-        uint32_t            Offset;
-        uint32_t            Size;
+        RHIShaderStageFlags stageFlags;
+        uint32_t            offset;
+        uint32_t            size;
     };
 
     struct RHIQueueFamilyProperties
     {
-        RHIQueueFlags QueueFlags;
-        uint32_t      QueueCount;
-        uint32_t      TimestampValidBits;
-        RHIExtent3D   MinImageTransferGranularity;
+        RHIQueueFlags queueFlags;
+        uint32_t      queueCount;
+        uint32_t      timestampValidBits;
+        RHIExtent3D   minImageTransferGranularity;
     };
 
     struct RHIRenderPassCreateInfo
     {
-        RHIStructureType                SType;
-        const void*                     PNext;
-        RHIRenderPassCreateFlags        Flags;
-        uint32_t                        AttachmentCount;
-        const RHIAttachmentDescription* PAttachments;
-        uint32_t                        SubpassCount;
-        const RHISubpassDescription*    PSubpasses;
-        uint32_t                        DependencyCount;
-        const RHISubpassDependency*     PDependencies;
+        RHIStructureType                sType;
+        const void*                     pNext;
+        RHIRenderPassCreateFlags        flags;
+        uint32_t                        attachmentCount;
+        const RHIAttachmentDescription* pAttachments;
+        uint32_t                        subpassCount;
+        const RHISubpassDescription*    pSubpasses;
+        uint32_t                        dependencyCount;
+        const RHISubpassDependency*     pDependencies;
     };
 
     struct RHISamplerCreateInfo
     {
-        RHIStructureType      SType;
-        const void*           PNext;
-        RHISamplerCreateFlags Flags;
-        RHIFilter             MagFilter;
-        RHIFilter             MinFilter;
-        RHISamplerMipmapMode  MipmapMode;
-        RHISamplerAddressMode AddressModeU;
-        RHISamplerAddressMode AddressModeV;
-        RHISamplerAddressMode AddressModeW;
-        float                 MipLodBias;
-        RHIBool32             AnisotropyEnable;
-        float                 MaxAnisotropy;
-        RHIBool32             CompareEnable;
-        RHICompareOp          CompareOp;
-        float                 MinLod;
-        float                 MaxLod;
-        RHIBorderColor        BorderColor;
-        RHIBool32             UnnormalizedCoordinates;
+        RHIStructureType      sType;
+        const void*           pNext;
+        RHISamplerCreateFlags flags;
+        RHIFilter             magFilter;
+        RHIFilter             minFilter;
+        RHISamplerMipmapMode  mipmapMode;
+        RHISamplerAddressMode addressModeU;
+        RHISamplerAddressMode addressModeV;
+        RHISamplerAddressMode addressModeW;
+        float                 mipLodBias;
+        RHIBool32             anisotropyEnable;
+        float                 maxAnisotropy;
+        RHIBool32             compareEnable;
+        RHICompareOp          compareOp;
+        float                 minLod;
+        float                 maxLod;
+        RHIBorderColor        borderColor;
+        RHIBool32             unnormalizedCoordinates;
     };
 
     struct RHISemaphoreCreateInfo
     {
-        RHIStructureType        SType;
-        const void*             PNext;
-        RHISemaphoreCreateFlags Flags;
+        RHIStructureType        sType;
+        const void*             pNext;
+        RHISemaphoreCreateFlags flags;
     };
 
     struct RHIShaderModuleCreateInfo
     {
-        RHIStructureType           SType;
-        const void*                PNext;
-        RHIShaderModuleCreateFlags Flags;
-        size_t                     CodeSize;
-        const uint32_t*            PCode;
+        RHIStructureType           sType;
+        const void*                pNext;
+        RHIShaderModuleCreateFlags flags;
+        size_t                     codeSize;
+        const uint32_t*            pCode;
     };
 
     struct RHISubmitInfo
     {
-        RHIStructureType             SType;
-        const void*                  PNext;
-        uint32_t                     WaitSemaphoreCount;
-        RHISemaphore**               PWaitSemaphores;
-        const RHIPipelineStageFlags* PWaitDstStageMask;
-        uint32_t                     CommandBufferCount;
-        RHICommandBuffer* const*     PCommandBuffers;
-        uint32_t                     SignalSemaphoreCount;
-        const RHISemaphore**         PSignalSemaphores;
+        RHIStructureType             sType;
+        const void*                  pNext;
+        uint32_t                     waitSemaphoreCount;
+        RHISemaphore**               pWaitSemaphores;
+        const RHIPipelineStageFlags* pWaitDstStageMask;
+        uint32_t                     commandBufferCount;
+        RHICommandBuffer* const*     pCommandBuffers;
+        uint32_t                     signalSemaphoreCount;
+        const RHISemaphore**         pSignalSemaphores;
     };
 
     struct RHISubpassDependency
     {
-        uint32_t              SrcSubpass;
-        uint32_t              DstSubpass;
-        RHIPipelineStageFlags SrcStageMask;
-        RHIPipelineStageFlags DstStageMask;
-        RHIAccessFlags        SrcAccessMask;
-        RHIAccessFlags        DstAccessMask;
-        RHIDependencyFlags    DependencyFlags;
+        uint32_t              srcSubpass;
+        uint32_t              dstSubpass;
+        RHIPipelineStageFlags srcStageMask;
+        RHIPipelineStageFlags dstStageMask;
+        RHIAccessFlags        srcAccessMask;
+        RHIAccessFlags        dstAccessMask;
+        RHIDependencyFlags    dependencyFlags;
     };
 
     struct RHISubpassDescription
     {
-        RHISubpassDescriptionFlags    Flags;
-        RHIPipelineBindPoint          PipelineBindPoint;
-        uint32_t                      InputAttachmentCount;
-        const RHIAttachmentReference* PInputAttachments;
-        uint32_t                      ColorAttachmentCount;
-        const RHIAttachmentReference* PColorAttachments;
-        const RHIAttachmentReference* PResolveAttachments;
-        const RHIAttachmentReference* PDepthStencilAttachment;
-        uint32_t                      PreserveAttachmentCount;
-        const uint32_t*               PPreserveAttachments;
+        RHISubpassDescriptionFlags    flags;
+        RHIPipelineBindPoint          pipelineBindPoint;
+        uint32_t                      inputAttachmentCount;
+        const RHIAttachmentReference* pInputAttachments;
+        uint32_t                      colorAttachmentCount;
+        const RHIAttachmentReference* pColorAttachments;
+        const RHIAttachmentReference* pResolveAttachments;
+        const RHIAttachmentReference* pDepthStencilAttachment;
+        uint32_t                      preserveAttachmentCount;
+        const uint32_t*               pPreserveAttachments;
     };
 
     struct RHIWriteDescriptorSet
     {
-        RHIStructureType         SType;
-        const void*              PNext;
-        RHIDescriptorSet*        DstSet;
-        uint32_t                 DstBinding;
-        uint32_t                 DstArrayElement;
-        uint32_t                 DescriptorCount;
-        RHIDescriptorType        DescriptorType;
-        RHIDescriptorImageInfo*  PImageInfo       = nullptr;
-        RHIDescriptorBufferInfo* PBufferInfo      = nullptr;
-        RHIBufferView*           PTexelBufferView = nullptr;
+        RHIStructureType         sType;
+        const void*              pNext;
+        RHIDescriptorSet*        dstSet;
+        uint32_t                 dstBinding;
+        uint32_t                 dstArrayElement;
+        uint32_t                 descriptorCount;
+        RHIDescriptorType        descriptorType;
+        RHIDescriptorImageInfo*  pImageInfo       = nullptr;
+        RHIDescriptorBufferInfo* pBufferInfo      = nullptr;
+        RHIBufferView*           pTexelBufferView = nullptr;
     };
 
     struct RHIAttachmentReference
     {
-        uint32_t       Attachment;
-        RHIImageLayout Layout;
+        uint32_t       attachment;
+        RHIImageLayout layout;
     };
 
     struct RHIPipelineColorBlendAttachmentState
     {
-        RHIBool32              BlendEnable;
-        RHIBlendFactor         SrcColorBlendFactor;
-        RHIBlendFactor         DstColorBlendFactor;
-        RHIBlendOp             ColorBlendOp;
-        RHIBlendFactor         SrcAlphaBlendFactor;
-        RHIBlendFactor         DstAlphaBlendFactor;
-        RHIBlendOp             AlphaBlendOp;
-        RHIColorComponentFlags ColorWriteMask;
+        RHIBool32              blendEnable;
+        RHIBlendFactor         srcColorBlendFactor;
+        RHIBlendFactor         dstColorBlendFactor;
+        RHIBlendOp             colorBlendOp;
+        RHIBlendFactor         srcAlphaBlendFactor;
+        RHIBlendFactor         dstAlphaBlendFactor;
+        RHIBlendOp             alphaBlendOp;
+        RHIColorComponentFlags colorWriteMask;
     };
 
     struct RHIRect2D
     {
-        RHIOffset2D Offset;
-        RHIExtent2D Extent;
+        RHIOffset2D offset;
+        RHIExtent2D extent;
     };
 
     struct RHISpecializationInfo
     {
-        uint32_t                          MapEntryCount;
-        const RHISpecializationMapEntry** PMapEntries;
-        size_t                            DataSize;
-        const void*                       PData;
+        uint32_t                          mapEntryCount;
+        const RHISpecializationMapEntry** pMapEntries;
+        size_t                            dataSize;
+        const void*                       pData;
     };
 
     struct RHIVertexInputAttributeDescription
     {
-        uint32_t  Location;
-        uint32_t  Binding;
-        RHIFormat Format;
-        uint32_t  Offset;
+        uint32_t  location;
+        uint32_t  binding;
+        RHIFormat format;
+        uint32_t  offset;
     };
 
     struct RHIVertexInputBindingDescription
     {
-        uint32_t           Binding;
-        uint32_t           Stride;
-        RHIVertexInputRate InputRate;
+        uint32_t           binding;
+        uint32_t           stride;
+        RHIVertexInputRate inputRate;
     };
 
     struct RHIViewport
     {
-        float X;
-        float Y;
-        float Width;
-        float Height;
-        float MinDepth;
-        float MaxDepth;
+        float x;
+        float y;
+        float width;
+        float height;
+        float minDepth;
+        float maxDepth;
     };
 
     struct RHIRenderPassBeginInfo
     {
-        RHIStructureType     SType;
-        const void*          PNext;
-        RHIRenderPass*       RenderPass;
-        RHIFramebuffer*      Framebuffer;
-        RHIRect2D            RenderArea;
-        uint32_t             ClearValueCount;
-        const RHIClearValue* PClearValues;
+        RHIStructureType     sType;
+        const void*          pNext;
+        RHIRenderPass*       renderPass;
+        RHIFramebuffer*      framebuffer;
+        RHIRect2D            renderArea;
+        uint32_t             clearValueCount;
+        const RHIClearValue* pClearValues;
     };
 
     struct RHIClearDepthStencilValue
     {
-        float    Depth;
-        uint32_t Stencil;
+        float    depth;
+        uint32_t stencil;
     };
 
     union RHIClearColorValue
     {
-        float    Float32[4];
-        int32_t  Int32[4];
-        uint32_t Uint32[4];
+        float    float32[4];
+        int32_t  int32[4];
+        uint32_t uint32[4];
     };
 
     union RHIClearValue
     {
-        RHIClearColorValue        Color;
-        RHIClearDepthStencilValue DepthStencil;
+        RHIClearColorValue        color;
+        RHIClearDepthStencilValue depthStencil;
     };
 
     struct RHIClearRect
     {
-        RHIRect2D Rect;
-        uint32_t  BaseArrayLayer;
-        uint32_t  LayerCount;
+        RHIRect2D rect;
+        uint32_t  baseArrayLayer;
+        uint32_t  layerCount;
     };
 
     struct RHIClearAttachment
     {
-        RHIImageAspectFlags AspectMask;
-        uint32_t            ColorAttachment;
-        RHIClearValue       ClearValue;
+        RHIImageAspectFlags aspectMask;
+        uint32_t            colorAttachment;
+        RHIClearValue       clearValue;
     };
 
     struct RHISwapChainDesc
     {
-        RHIExtent2D                Extent;
-        RHIFormat                  ImageFormat;
-        RHIViewport*               Viewport;
-        RHIRect2D*                 Scissor;
-        std::vector<RHIImageView*> ImageViews;
+        RHIExtent2D                extent;
+        RHIFormat                  imageFormat;
+        RHIViewport*               viewport;
+        RHIRect2D*                 scissor;
+        std::vector<RHIImageView*> imageViews;
     };
 
     struct RHIDepthImageDesc
     {
-        RHIImage*     DepthImage      = RHI_NULL_HANDLE;
-        RHIImageView* DepthImageView = RHI_NULL_HANDLE;
-        RHIFormat     DepthImageFormat;
+        RHIImage*     depthImage     = RHI_NULL_HANDLE;
+        RHIImageView* depthImageView = RHI_NULL_HANDLE;
+        RHIFormat     depthImageFormat;
     };
 
     struct QueueFamilyIndices
     {
-        std::optional<uint32_t> GraphicsFamily;
-        std::optional<uint32_t> PresentFamily;
-        std::optional<uint32_t> MComputeFamily;
+        std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+        std::optional<uint32_t> computeFamily;
 
-        bool IsComplete() const
+        bool isComplete()
         {
-            return GraphicsFamily.has_value() && PresentFamily.has_value() && MComputeFamily.has_value();
+            return graphicsFamily.has_value() && presentFamily.has_value() && computeFamily.has_value();
+            ;
         }
     };
-
-    //    struct SwapChainSupportDetails
-    //    {
-    //        VkSurfaceCapabilitiesKHR        capabilities;
-    //        std::vector<VkSurfaceFormatKHR> formats;
-    //        std::vector<VkPresentModeKHR>   presentModes;
-    //    };
 } // namespace Galaxy

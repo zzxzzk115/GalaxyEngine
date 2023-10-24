@@ -82,3 +82,27 @@
 #endif
 
 #define GAL_RELATIVE_PATH(path) Galaxy::g_RuntimeGlobalContext.FileSys->GetExecutableRelativeDirectory(path)
+
+#define VK_CHECK(result, errorMessage) \
+    do \
+    { \
+        VkResult err = result; \
+        if (err) \
+        { \
+            GAL_CORE_ERROR(errorMessage); \
+            GAL_CORE_ERROR("[VK_CHECK] Detected Vulkan error: {0}", (int)err); \
+            GAL_CORE_ASSERT(false); \
+            abort(); \
+        } \
+    } while (0)
+
+#define VK_CHECK_RETURN_BOOLEAN(result, errorMessage) \
+    if (result == VK_SUCCESS) \
+    { \
+        return true; \
+    } \
+    else \
+    { \
+        GAL_CORE_ERROR(errorMessage); \
+        return false; \
+    }

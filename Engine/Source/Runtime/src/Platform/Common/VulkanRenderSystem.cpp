@@ -5,18 +5,25 @@
 //
 
 #include "GalaxyEngine/Platform/Common/VulkanRenderSystem.h"
-#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanGraphicsContext.h"
-
-#include <vulkan/vulkan.h>
 
 namespace Galaxy
 {
-    void VulkanRenderSystem::Init() {}
+    void VulkanRenderSystem::Init(RenderSystemInitInfo initInfo)
+    {
+        // 1. Init RHI
+        RHIInitInfo rhiInitInfo = {};
+        rhiInitInfo.WindowSys = initInfo.WindowSys;
+        m_RHI = CreateRef<VulkanRHI>();
+        m_RHI->Initialize(rhiInitInfo);
+    }
 
-    void VulkanRenderSystem::Release() {}
+    void VulkanRenderSystem::Release()
+    {
+        m_RHI.reset();
+    }
 
     void VulkanRenderSystem::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
     {
-        g_VulkanGraphicsContextPtr->FrameBufferResized = true;
+
     }
 } // namespace Galaxy

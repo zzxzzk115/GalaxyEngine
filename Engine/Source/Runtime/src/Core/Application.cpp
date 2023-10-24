@@ -18,7 +18,9 @@ namespace Galaxy
 
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
-        g_RuntimeGlobalContext.StartSystems();
+        RuntimeGlobalContextInitInfo runtimeGlobalContextInitInfo = {};
+        runtimeGlobalContextInitInfo.AppName = specification.Name;
+        g_RuntimeGlobalContext.StartSystems(runtimeGlobalContextInitInfo);
 
         GAL_CORE_ASSERT(!s_Instance, "[Application] Application already exists!");
         s_Instance = this;
@@ -34,7 +36,6 @@ namespace Galaxy
             std::filesystem::current_path(m_Specification.WorkingDirectory);
         }
 
-        g_RuntimeGlobalContext.WindowSys->Init(WindowInitInfo(m_Specification.Name));
         g_RuntimeGlobalContext.WindowSys->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
 
         GAL_CORE_INFO("[Application] Initiated");

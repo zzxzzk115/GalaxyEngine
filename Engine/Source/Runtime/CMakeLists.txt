@@ -29,7 +29,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC glfw)
 target_link_libraries(${TARGET_NAME} PUBLIC ${Vulkan_LIBRARIES})
 target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog)
-target_link_libraries(${TARGET_NAME} PUBLIC VulkanMemoryAllocator)
+target_link_libraries(${TARGET_NAME} PUBLIC GPUOpen::VulkanMemoryAllocator)
 
 target_include_directories(
         ${TARGET_NAME}

@@ -14,7 +14,7 @@ namespace Galaxy
 {
     RuntimeGlobalContext g_RuntimeGlobalContext;
 
-    void RuntimeGlobalContext::StartSystems()
+    void RuntimeGlobalContext::StartSystems(RuntimeGlobalContextInitInfo initInfo)
     {
         LoggerSys = CreateRef<LoggerSystem>();
 
@@ -22,10 +22,15 @@ namespace Galaxy
 
         // Currently, we create GLFW window for Vulkan backend
         WindowSys = CreateRef<GLFWWindowSystem>();
+        WindowInitInfo windowInitInfo = {};
+        windowInitInfo.Title = initInfo.AppName;
+        WindowSys->Init(windowInitInfo);
 
         // Currently, we create a Vulkan Renderer for all the platforms
         RenderSys = CreateRef<VulkanRenderSystem>();
-        RenderSys->Init();
+        RenderSystemInitInfo renderSystemInitInfo = {};
+        renderSystemInitInfo.WindowSys = WindowSys;
+        RenderSys->Init(renderSystemInitInfo);
     }
 
     void RuntimeGlobalContext::ShutdownSystems()

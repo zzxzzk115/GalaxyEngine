@@ -10,11 +10,18 @@
 
 namespace Galaxy
 {
+    class WindowSystem;
+
+    struct RenderSystemInitInfo
+    {
+        Ref<WindowSystem> WindowSys;
+    };
+
     class RenderSystem
     {
     public:
-        virtual void Init()    = 0;
-        virtual void Release() = 0;
+        virtual void Init(RenderSystemInitInfo) = 0;
+        virtual void Release()                  = 0;
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
     };
