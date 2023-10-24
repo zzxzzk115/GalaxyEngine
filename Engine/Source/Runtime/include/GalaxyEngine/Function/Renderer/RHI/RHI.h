@@ -235,8 +235,8 @@ namespace Galaxy
         virtual void                     GetPhysicalDeviceProperties(RHIPhysicalDeviceProperties* pProperties) = 0;
         virtual RHICommandBuffer*        GetCurrentCommandBuffer() const                                       = 0;
         virtual RHICommandBuffer* const* GetCommandBufferList() const                                          = 0;
-        virtual RHICommandPool*          GetCommandPoor() const                                                = 0;
-        virtual RHIDescriptorPool*       GetDescriptorPoor() const                                             = 0;
+        virtual RHICommandPool*          GetCommandPool() const                                                = 0;
+        virtual RHIDescriptorPool*       GetDescriptorPool() const                                             = 0;
         virtual RHIFence* const*         GetFenceList() const                                                  = 0;
         virtual QueueFamilyIndices       GetQueueFamilyIndices() const                                         = 0;
         virtual RHIQueue*                GetGraphicsQueue() const                                              = 0;

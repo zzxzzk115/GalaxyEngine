@@ -22,6 +22,8 @@ namespace Galaxy
         m_RHI.reset();
     }
 
+    Ref<RHI> VulkanRenderSystem::GetRHI() { return m_RHI; }
+
     void VulkanRenderSystem::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
     {
 

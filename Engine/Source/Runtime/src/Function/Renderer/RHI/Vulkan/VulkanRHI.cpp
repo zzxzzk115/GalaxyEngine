@@ -3252,11 +3252,11 @@ namespace Galaxy
     {
         return CommandBuffers;
     }
-    RHICommandPool* VulkanRHI::GetCommandPoor() const
+    RHICommandPool* VulkanRHI::GetCommandPool() const
     {
         return RhiCommandPool;
     }
-    RHIDescriptorPool* VulkanRHI::GetDescriptorPoor() const
+    RHIDescriptorPool* VulkanRHI::GetDescriptorPool() const
     {
         return DescriptorPool;
     }

@@ -129,8 +129,8 @@ namespace Galaxy
         void GetPhysicalDeviceProperties(RHIPhysicalDeviceProperties* pProperties) override;
         RHICommandBuffer* GetCurrentCommandBuffer() const override;
         RHICommandBuffer* const* GetCommandBufferList() const override;
-        RHICommandPool* GetCommandPoor() const override;
-        RHIDescriptorPool* GetDescriptorPoor()const override;
+        RHICommandPool*          GetCommandPool() const override;
+        RHIDescriptorPool*       GetDescriptorPool()const override;
         RHIFence* const* GetFenceList() const override;
         QueueFamilyIndices GetQueueFamilyIndices() const override;
         RHIQueue* GetGraphicsQueue() const override;
