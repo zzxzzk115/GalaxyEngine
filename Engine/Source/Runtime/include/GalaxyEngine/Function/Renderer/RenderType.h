@@ -1895,7 +1895,7 @@ namespace Galaxy
 
     struct RenderMeshData
     {
-        StaticMeshData              StaticMeshData;
+        StaticMeshData              StaticData;
         std::shared_ptr<BufferData> SkeletonBindingBuffer;
     };
 
