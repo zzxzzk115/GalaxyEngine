@@ -32,7 +32,7 @@ namespace Galaxy
         initInfo.QueueFamily               = m_RHI->GetQueueFamilyIndices().graphicsFamily.value();
         initInfo.Queue                     = ((VulkanQueue*)m_RHI->GetGraphicsQueue())->GetResource();
         initInfo.DescriptorPool            = std::static_pointer_cast<VulkanRHI>(m_RHI)->GlobalVkDescriptorPool;
-        initInfo.Subpass                   = _main_camera_subpass_ui;
+        initInfo.Subpass                   = _main_camera_subpass_gui;
 
         // may be different from the real swapchain image count
         // see ImGui_ImplVulkanH_GetMinImageCountFromPresentMode

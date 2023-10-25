@@ -11,6 +11,10 @@
 
 namespace Galaxy
 {
+    struct MainCameraPassInitInfo : RenderPassInitInfo
+    {
+    };
+
     class MainCameraPass : public RenderPass
     {
     public:

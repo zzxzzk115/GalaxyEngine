@@ -24,6 +24,9 @@ namespace Galaxy
 
         auto mainCameraPass = std::static_pointer_cast<MainCameraPass>(m_MainCameraPass);
 
+        MainCameraPassInitInfo mainCameraInitInfo;
+        m_MainCameraPass->Initialize(&mainCameraInitInfo);
+
         GUIPassInitInfo guiInitInfo;
         guiInitInfo.RenderPass = mainCameraPass->GetRenderPass();
         m_GUIPass->Initialize(&guiInitInfo);

@@ -12,8 +12,19 @@ namespace Galaxy
 {
     enum
     {
+        _main_camera_pass_base_color = 0,
+        _main_camera_pass_backup_buffer_odd = 1,
+        _main_camera_pass_backup_buffer_even = 2,
+        _main_camera_pass_depth = 3,
+        _main_camera_pass_custom_attachment_count = 4,
+        _main_camera_pass_total_attachment_count = 4,
+    };
+
+    enum
+    {
         _main_camera_subpass_basepass = 0,
-        _main_camera_subpass_ui
+        _main_camera_subpass_gui,
+        _main_camera_subpass_count
     };
 
     class RenderPass : public RenderPassBase
