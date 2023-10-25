@@ -21,6 +21,11 @@ namespace Galaxy
         SetupSwapchainFramebuffers();
     }
 
+    void MainCameraPass::DrawForward(GUIPass& guiPass, uint32_t currentSwapchainImageIndex)
+    {
+        // TODO: draw passes
+    }
+
     void MainCameraPass::SetupAttachments() {}
 
     void MainCameraPass::SetupRenderPass() {}

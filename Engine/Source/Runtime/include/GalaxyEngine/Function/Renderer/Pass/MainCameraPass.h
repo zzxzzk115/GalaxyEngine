@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "GUIPass.h"
 #include "GalaxyEngine/Function/Renderer/Pass/RenderPass.h"
 
 namespace Galaxy
@@ -14,6 +15,9 @@ namespace Galaxy
     {
     public:
         void Initialize(const RenderPassInitInfo* initInfo) override final;
+
+        void DrawForward(GUIPass& guiPass,
+                         uint32_t currentSwapchainImageIndex);
 
     private:
         void SetupAttachments();

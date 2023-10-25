@@ -29,7 +29,9 @@ namespace Galaxy
         virtual void Clear() {};
         virtual void Initialize(RenderPipelineInitInfo initInfo) = 0;
 
-        void InitializeUIRenderBackend(Ref<GUIBackend> guiBackend);
+        void InitializeUIRenderBackend(GUIBackend* guiBackend);
+
+        virtual void ForwardRender(Ref<RHI> rhi);
 
     protected:
         Ref<RHI> m_RHI;

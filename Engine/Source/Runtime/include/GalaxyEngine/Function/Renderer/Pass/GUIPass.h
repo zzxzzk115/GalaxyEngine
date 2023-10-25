@@ -19,13 +19,13 @@ namespace Galaxy
     {
     public:
         void Initialize(const RenderPassInitInfo* initInfo) override final;
-        void InitializeUIRenderBackend(Ref<GUIBackend> guiBackend) override final;
+        void InitializeUIRenderBackend(GUIBackend* guiBackend) override final;
         void Draw() override final;
 
     private:
-        void uploadFonts();
+        void UploadFonts();
 
     private:
-        Ref<GUIBackend> m_GUIBackend;
+        GUIBackend* m_GUIBackend;
     };
 } // namespace Galaxy

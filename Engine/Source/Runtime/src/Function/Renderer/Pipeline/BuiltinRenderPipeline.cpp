@@ -5,8 +5,9 @@
 //
 
 #include "GalaxyEngine/Function/Renderer/Pipeline/BuiltinRenderPipeline.h"
-#include "GalaxyEngine/Function/Renderer/Pass/MainCameraPass.h"
 #include "GalaxyEngine/Function/Renderer/Pass/GUIPass.h"
+#include "GalaxyEngine/Function/Renderer/Pass/MainCameraPass.h"
+#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanRHI.h"
 
 namespace Galaxy
 {
@@ -26,5 +27,30 @@ namespace Galaxy
         GUIPassInitInfo guiInitInfo;
         guiInitInfo.RenderPass = mainCameraPass->GetRenderPass();
         m_GUIPass->Initialize(&guiInitInfo);
+    }
+
+    void BuiltinRenderPipeline::ForwardRender(Ref<RHI> rhi)
+    {
+        VulkanRHI*      vulkanRhi      = static_cast<VulkanRHI*>(rhi.get());
+
+        vulkanRhi->WaitForFences();
+
+        vulkanRhi->ResetCommandPool();
+
+        bool recreateSwapchain =
+            vulkanRhi->PrepareBeforePass(std::bind(&BuiltinRenderPipeline::PassUpdateAfterRecreateSwapchain, this));
+        if (recreateSwapchain)
+        {
+            return;
+        }
+
+        GUIPass&           guiPass            = *(static_cast<GUIPass*>(m_GUIPass.get()));
+
+        vulkanRhi->SubmitRendering(std::bind(&BuiltinRenderPipeline::PassUpdateAfterRecreateSwapchain, this));
+    }
+
+    void BuiltinRenderPipeline::PassUpdateAfterRecreateSwapchain()
+    {
+        // TODO: update passes
     }
 } // namespace Galaxy

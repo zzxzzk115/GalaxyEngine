@@ -15,5 +15,5 @@ namespace Galaxy
         m_RHI = commonInfo.RHI;
     }
 
-    void RenderPassBase::InitializeUIRenderBackend(Ref<GUIBackend> guiBackend) {}
+    void RenderPassBase::InitializeUIRenderBackend(GUIBackend* guiBackend) {}
 } // namespace Galaxy

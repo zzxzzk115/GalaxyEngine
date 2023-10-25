@@ -11,19 +11,19 @@
 namespace Galaxy
 {
     class RHI;
-    class GUIBackend;
     class RenderPipelineBase;
 
     class VulkanRenderSystem : public RenderSystem
     {
     public:
         virtual void     Init(RenderSystemInitInfo initInfo) override;
+        virtual void     Update(float deltaTime) override;
         virtual void     Release() override;
         virtual Ref<RHI> GetRHI() override;
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
-        void InitializeUIRenderBackend(Ref<GUIBackend> guiBackend);
+        void InitializeUIRenderBackend(GUIBackend* guiBackend) override;
 
     private:
         Ref<RHI> m_RHI;

@@ -27,7 +27,7 @@ namespace Galaxy
         virtual void Initialize(const RenderPassInitInfo* initInfo) = 0;
         virtual void PostInitialize();
         virtual void SetCommonInfo(RenderPassCommonInfo commonInfo);
-        virtual void InitializeUIRenderBackend(Ref<GUIBackend> guiBackend);
+        virtual void InitializeUIRenderBackend(GUIBackend* guiBackend);
 
     protected:
         Ref<RHI>                 m_RHI;

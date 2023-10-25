@@ -28,6 +28,11 @@ namespace Galaxy
         m_RenderPipeline->Initialize(pipelineInitInfo);
     }
 
+    void VulkanRenderSystem::Update(float deltaTime)
+    {
+        
+    }
+
     void VulkanRenderSystem::Release()
     {
         m_RHI.reset();
@@ -37,7 +42,7 @@ namespace Galaxy
 
     void VulkanRenderSystem::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {}
 
-    void VulkanRenderSystem::InitializeUIRenderBackend(Ref<GUIBackend> guiBackend)
+    void VulkanRenderSystem::InitializeUIRenderBackend(GUIBackend* guiBackend)
     {
         m_RenderPipeline->InitializeUIRenderBackend(guiBackend);
     }

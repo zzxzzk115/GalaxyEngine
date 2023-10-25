@@ -14,5 +14,8 @@ namespace Galaxy
     {
     public:
         virtual void Initialize(RenderPipelineInitInfo initInfo) override final;
+        virtual void ForwardRender(Ref<RHI> rhi) override final;
+
+        void PassUpdateAfterRecreateSwapchain();
     };
 } // namespace Galaxy

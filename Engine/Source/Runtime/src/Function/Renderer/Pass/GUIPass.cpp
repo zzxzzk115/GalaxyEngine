@@ -20,7 +20,7 @@ namespace Galaxy
         Framebuffer.RenderPass = static_cast<const GUIPassInitInfo*>(initInfo)->RenderPass;
     }
 
-    void GUIPass::InitializeUIRenderBackend(Ref<GUIBackend> guiBackend)
+    void GUIPass::InitializeUIRenderBackend(GUIBackend* guiBackend)
     {
         m_GUIBackend = guiBackend;
 
@@ -40,10 +40,10 @@ namespace Galaxy
         initInfo.ImageCount    = 3;
         ImGui_ImplVulkan_Init(&initInfo, ((VulkanRenderPass*)Framebuffer.RenderPass)->GetResource());
 
-        uploadFonts();
+        UploadFonts();
     }
 
-    void GUIPass::uploadFonts()
+    void GUIPass::UploadFonts()
     {
         RHICommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType                       = RHI_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

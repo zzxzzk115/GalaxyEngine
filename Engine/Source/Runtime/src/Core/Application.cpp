@@ -9,6 +9,7 @@
 #include "GalaxyEngine/Core/Macro.h"
 #include "GalaxyEngine/Core/Time/Time.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
+#include "GalaxyEngine/Function/GUI/ImGuiBackend.h"
 #include "GalaxyEngine/Function/Global/GlobalContext.h"
 #include "GalaxyEngine/Function/Renderer/RenderSystem.h"
 
@@ -38,6 +39,14 @@ namespace Galaxy
 
         g_RuntimeGlobalContext.WindowSys->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
 
+        // FIXME: fix framebuffer creation and uncomment following lines
+//        // Create and Init GUI backend
+//        auto imGuiBackend = new ImGuiBackend();
+//        GUIBackendInitInfo guiBackendInitInfo = {};
+//        guiBackendInitInfo.WindowSys = g_RuntimeGlobalContext.WindowSys;
+//        guiBackendInitInfo.RenderSys = g_RuntimeGlobalContext.RenderSys;
+//        imGuiBackend->Initialize(guiBackendInitInfo);
+
         GAL_CORE_INFO("[Application] Initiated");
     }
 
@@ -62,6 +71,8 @@ namespace Galaxy
                 {
                     layer->OnUpdate(timeStep);
                 }
+
+                g_RuntimeGlobalContext.RenderSys->Update(timeStep);
             }
 
             g_RuntimeGlobalContext.WindowSys->OnRender();

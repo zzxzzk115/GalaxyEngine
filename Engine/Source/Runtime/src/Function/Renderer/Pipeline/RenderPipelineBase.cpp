@@ -8,8 +8,10 @@
 
 namespace Galaxy
 {
-    void RenderPipelineBase::InitializeUIRenderBackend(Ref<GUIBackend> guiBackend)
+    void RenderPipelineBase::InitializeUIRenderBackend(GUIBackend* guiBackend)
     {
         m_GUIPass->InitializeUIRenderBackend(guiBackend);
     }
+
+    void RenderPipelineBase::ForwardRender(Ref<RHI> rhi) {}
 } // namespace Galaxy
