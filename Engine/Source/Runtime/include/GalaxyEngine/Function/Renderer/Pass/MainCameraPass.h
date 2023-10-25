@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "GUIPass.h"
+#include "GalaxyEngine/Function/Renderer/Pass/GUIPass.h"
 #include "GalaxyEngine/Function/Renderer/Pass/RenderPass.h"
 
 namespace Galaxy
