@@ -14,9 +14,13 @@ namespace Galaxy
     {
     public:
         virtual void Initialize(GUIBackendInitInfo initInfo) override final;
+        virtual void SetupRenderingConfig(GUIBackendRenderingConfig config) override final;
+        virtual void Begin() override final;
         virtual void PreRender() override final;
+        virtual void End() override final;
 
     private:
+        void UploadFonts();
         void SetDarkThemeColors();
     };
 } // namespace Galaxy

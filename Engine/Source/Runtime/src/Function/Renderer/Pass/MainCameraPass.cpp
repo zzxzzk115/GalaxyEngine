@@ -5,6 +5,10 @@
 //
 
 #include "GalaxyEngine/Function/Renderer/Pass/MainCameraPass.h"
+#include "GalaxyEngine/Function/Renderer/RenderMesh.h"
+
+#include "standard_frag.h"
+#include "standard_vert.h"
 
 namespace Galaxy
 {
@@ -23,7 +27,30 @@ namespace Galaxy
 
     void MainCameraPass::DrawForward(GUIPass& guiPass, uint32_t currentSwapchainImageIndex)
     {
-        // TODO: draw passes
+        {
+            RHIRenderPassBeginInfo renderpassBeginInfo {};
+            renderpassBeginInfo.sType             = RHI_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderpassBeginInfo.renderPass        = Framebuffer.RenderPass;
+            renderpassBeginInfo.framebuffer       = m_SwapchainFramebuffers[currentSwapchainImageIndex];
+            renderpassBeginInfo.renderArea.offset = {0, 0};
+            renderpassBeginInfo.renderArea.extent = m_RHI->GetSwapchainInfo().extent;
+
+            RHIClearValue clearValues[_main_camera_pass_total_attachment_count];
+            clearValues[_main_camera_pass_backup_buffer_odd].color  = {{0.0f, 0.0f, 0.0f, 1.0f}};
+            clearValues[_main_camera_pass_backup_buffer_even].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+            clearValues[_main_camera_pass_depth].depthStencil       = {1.0f, 0};
+            renderpassBeginInfo.clearValueCount                    = (sizeof(clearValues) / sizeof(clearValues[0]));
+            renderpassBeginInfo.pClearValues                       = clearValues;
+
+            m_RHI->CmdBeginRenderPassPfn(m_RHI->GetCurrentCommandBuffer(), &renderpassBeginInfo, RHI_SUBPASS_CONTENTS_INLINE);
+        }
+
+        m_RHI->CmdNextSubpassPfn(m_RHI->GetCurrentCommandBuffer(), RHI_SUBPASS_CONTENTS_INLINE);
+
+        // TODO: draw other passes
+        guiPass.Draw();
+
+        m_RHI->EndCommandBufferPfn(m_RHI->GetCurrentCommandBuffer());
     }
 
     void MainCameraPass::SetupAttachments()
@@ -199,9 +226,169 @@ namespace Galaxy
         }
     }
 
-    void MainCameraPass::SetupDescriptorSetLayout() {}
+    void MainCameraPass::SetupDescriptorSetLayout()
+    {
+        DescriptorInfos.resize(_layout_type_count);
 
-    void MainCameraPass::SetupPipelines() {}
+        {
+            RHIDescriptorSetLayoutBinding perMeshLayoutBindings[1];
+
+            RHIDescriptorSetLayoutBinding& perMeshLayoutUniformBufferBinding = perMeshLayoutBindings[0];
+            perMeshLayoutUniformBufferBinding.binding                       = 0;
+            perMeshLayoutUniformBufferBinding.descriptorType                = RHI_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            perMeshLayoutUniformBufferBinding.descriptorCount               = 1;
+            perMeshLayoutUniformBufferBinding.stageFlags                    = RHI_SHADER_STAGE_VERTEX_BIT;
+            perMeshLayoutUniformBufferBinding.pImmutableSamplers            = nullptr;
+
+            RHIDescriptorSetLayoutCreateInfo perMeshLayoutCreateInfo {};
+            perMeshLayoutCreateInfo.sType        = RHI_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            perMeshLayoutCreateInfo.bindingCount = 1;
+            perMeshLayoutCreateInfo.pBindings    = perMeshLayoutBindings;
+
+            if (m_RHI->CreateDescriptorSetLayout(&perMeshLayoutCreateInfo, DescriptorInfos[_per_mesh].Layout) != RHI_SUCCESS)
+            {
+                throw std::runtime_error("[MainCameraPass] Failed to create per mesh layout!");
+            }
+        }
+    }
+
+    void MainCameraPass::SetupPipelines()
+    {
+        RenderPipelines.resize(_render_pipeline_type_count);
+
+        // mesh gbuffer
+        {
+            RHIDescriptorSetLayout*      descriptorSetLayouts[1] = {DescriptorInfos[_per_mesh].Layout};
+            RHIPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
+            pipelineLayoutCreateInfo.sType          = RHI_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+            pipelineLayoutCreateInfo.setLayoutCount = 1;
+            pipelineLayoutCreateInfo.pSetLayouts    = descriptorSetLayouts;
+
+            if (m_RHI->CreatePipelineLayout(&pipelineLayoutCreateInfo, RenderPipelines[_render_pipeline_type_mesh_gbuffer].Layout) != RHI_SUCCESS)
+            {
+                throw std::runtime_error("[MainCameraPass] Failed to create mesh gbuffer pipeline layout!");
+            }
+
+            RHIShader* vertShaderModule = m_RHI->CreateShaderModule(STANDARD_VERT);
+            RHIShader* fragShaderModule = m_RHI->CreateShaderModule(STANDARD_FRAG);
+
+            RHIPipelineShaderStageCreateInfo vertPipelineShaderStageCreateInfo {};
+            vertPipelineShaderStageCreateInfo.sType  = RHI_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            vertPipelineShaderStageCreateInfo.stage  = RHI_SHADER_STAGE_VERTEX_BIT;
+            vertPipelineShaderStageCreateInfo.module = vertShaderModule;
+            vertPipelineShaderStageCreateInfo.pName  = "main";
+
+            RHIPipelineShaderStageCreateInfo fragPipelineShaderStageCreateInfo {};
+            fragPipelineShaderStageCreateInfo.sType  = RHI_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            fragPipelineShaderStageCreateInfo.stage  = RHI_SHADER_STAGE_FRAGMENT_BIT;
+            fragPipelineShaderStageCreateInfo.module = fragShaderModule;
+            fragPipelineShaderStageCreateInfo.pName  = "main";
+
+            RHIPipelineShaderStageCreateInfo shaderStages[] = {vertPipelineShaderStageCreateInfo,
+                                                                fragPipelineShaderStageCreateInfo};
+
+            auto vertexBindingDescriptions   = MeshVertex::GetBindingDescriptions();
+            auto vertexAttributeDescriptions = MeshVertex::GetAttributeDescriptions();
+            RHIPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo {};
+            vertexInputStateCreateInfo.sType = RHI_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+            vertexInputStateCreateInfo.vertexBindingDescriptionCount   = vertexBindingDescriptions.size();
+            vertexInputStateCreateInfo.pVertexBindingDescriptions      = &vertexBindingDescriptions[0];
+            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptions.size();
+            vertexInputStateCreateInfo.pVertexAttributeDescriptions    = &vertexAttributeDescriptions[0];
+
+            RHIPipelineInputAssemblyStateCreateInfo inputAssemblyCreateInfo {};
+            inputAssemblyCreateInfo.sType    = RHI_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+            inputAssemblyCreateInfo.topology = RHI_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+            inputAssemblyCreateInfo.primitiveRestartEnable = RHI_FALSE;
+
+            RHIPipelineViewportStateCreateInfo viewportStateCreateInfo {};
+            viewportStateCreateInfo.sType         = RHI_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+            viewportStateCreateInfo.viewportCount = 1;
+            viewportStateCreateInfo.pViewports    = m_RHI->GetSwapchainInfo().viewport;
+            viewportStateCreateInfo.scissorCount  = 1;
+            viewportStateCreateInfo.pScissors     = m_RHI->GetSwapchainInfo().scissor;
+
+            RHIPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo {};
+            rasterizationStateCreateInfo.sType = RHI_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+            rasterizationStateCreateInfo.depthClampEnable        = RHI_FALSE;
+            rasterizationStateCreateInfo.rasterizerDiscardEnable = RHI_FALSE;
+            rasterizationStateCreateInfo.polygonMode             = RHI_POLYGON_MODE_FILL;
+            rasterizationStateCreateInfo.lineWidth               = 1.0f;
+            rasterizationStateCreateInfo.cullMode                = RHI_CULL_MODE_BACK_BIT;
+            rasterizationStateCreateInfo.frontFace               = RHI_FRONT_FACE_COUNTER_CLOCKWISE;
+            rasterizationStateCreateInfo.depthBiasEnable         = RHI_FALSE;
+            rasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
+            rasterizationStateCreateInfo.depthBiasClamp          = 0.0f;
+            rasterizationStateCreateInfo.depthBiasSlopeFactor    = 0.0f;
+
+            RHIPipelineMultisampleStateCreateInfo multisampleStateCreateInfo {};
+            multisampleStateCreateInfo.sType = RHI_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+            multisampleStateCreateInfo.sampleShadingEnable  = RHI_FALSE;
+            multisampleStateCreateInfo.rasterizationSamples = RHI_SAMPLE_COUNT_1_BIT;
+
+            RHIPipelineColorBlendAttachmentState colorBlendAttachments[1] = {};
+            colorBlendAttachments[0].colorWriteMask = RHI_COLOR_COMPONENT_R_BIT | RHI_COLOR_COMPONENT_G_BIT |
+                                                        RHI_COLOR_COMPONENT_B_BIT | RHI_COLOR_COMPONENT_A_BIT;
+            colorBlendAttachments[0].blendEnable         = RHI_FALSE;
+            colorBlendAttachments[0].srcColorBlendFactor = RHI_BLEND_FACTOR_ONE;
+            colorBlendAttachments[0].dstColorBlendFactor = RHI_BLEND_FACTOR_ZERO;
+            colorBlendAttachments[0].colorBlendOp        = RHI_BLEND_OP_ADD;
+            colorBlendAttachments[0].srcAlphaBlendFactor = RHI_BLEND_FACTOR_ONE;
+            colorBlendAttachments[0].dstAlphaBlendFactor = RHI_BLEND_FACTOR_ZERO;
+            colorBlendAttachments[0].alphaBlendOp        = RHI_BLEND_OP_ADD;
+
+            RHIPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = {};
+            colorBlendStateCreateInfo.sType         = RHI_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+            colorBlendStateCreateInfo.logicOpEnable = RHI_FALSE;
+            colorBlendStateCreateInfo.logicOp       = RHI_LOGIC_OP_COPY;
+            colorBlendStateCreateInfo.attachmentCount =
+                sizeof(colorBlendAttachments) / sizeof(colorBlendAttachments[0]);
+            colorBlendStateCreateInfo.pAttachments      = &colorBlendAttachments[0];
+            colorBlendStateCreateInfo.blendConstants[0] = 0.0f;
+
+            RHIPipelineDepthStencilStateCreateInfo depthStencilCreateInfo {};
+            depthStencilCreateInfo.sType            = RHI_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+            depthStencilCreateInfo.depthTestEnable  = RHI_TRUE;
+            depthStencilCreateInfo.depthWriteEnable = RHI_TRUE;
+            depthStencilCreateInfo.depthCompareOp   = RHI_COMPARE_OP_LESS;
+            depthStencilCreateInfo.depthBoundsTestEnable = RHI_FALSE;
+            depthStencilCreateInfo.stencilTestEnable     = RHI_FALSE;
+
+            RHIDynamicState                   dynamicStates[] = {RHI_DYNAMIC_STATE_VIEWPORT, RHI_DYNAMIC_STATE_SCISSOR};
+            RHIPipelineDynamicStateCreateInfo dynamicStateCreateInfo {};
+            dynamicStateCreateInfo.sType             = RHI_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+            dynamicStateCreateInfo.dynamicStateCount = 2;
+            dynamicStateCreateInfo.pDynamicStates    = dynamicStates;
+
+            RHIGraphicsPipelineCreateInfo pipelineInfo {};
+            pipelineInfo.sType               = RHI_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+            pipelineInfo.stageCount          = 2;
+            pipelineInfo.pStages             = shaderStages;
+            pipelineInfo.pVertexInputState   = &vertexInputStateCreateInfo;
+            pipelineInfo.pInputAssemblyState = &inputAssemblyCreateInfo;
+            pipelineInfo.pViewportState      = &viewportStateCreateInfo;
+            pipelineInfo.pRasterizationState = &rasterizationStateCreateInfo;
+            pipelineInfo.pMultisampleState   = &multisampleStateCreateInfo;
+            pipelineInfo.pColorBlendState    = &colorBlendStateCreateInfo;
+            pipelineInfo.pDepthStencilState  = &depthStencilCreateInfo;
+            pipelineInfo.layout              = RenderPipelines[_render_pipeline_type_mesh_gbuffer].Layout;
+            pipelineInfo.renderPass          = Framebuffer.RenderPass;
+            pipelineInfo.subpass             = _main_camera_subpass_basepass;
+            pipelineInfo.basePipelineHandle  = RHI_NULL_HANDLE;
+            pipelineInfo.pDynamicState       = &dynamicStateCreateInfo;
+
+            if (RHI_SUCCESS != m_RHI->CreateGraphicsPipelines(RHI_NULL_HANDLE,
+                                                              1,
+                                                              &pipelineInfo,
+                                                              RenderPipelines[_render_pipeline_type_mesh_gbuffer].Pipeline))
+            {
+                throw std::runtime_error("[MainCameraPass] Failed to create mesh gbuffer graphics pipeline!");
+            }
+
+            m_RHI->DestroyShaderModule(vertShaderModule);
+            m_RHI->DestroyShaderModule(fragShaderModule);
+        }
+    }
 
     void MainCameraPass::SetupDescriptorSet() {}
 

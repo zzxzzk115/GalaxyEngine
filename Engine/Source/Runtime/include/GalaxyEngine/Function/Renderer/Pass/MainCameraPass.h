@@ -11,9 +11,19 @@
 
 namespace Galaxy
 {
-    struct MainCameraPassInitInfo : RenderPassInitInfo
+    enum LayoutType : uint8_t
     {
+        _per_mesh = 0,
+        _layout_type_count
     };
+
+    enum RenderPipeLineType : uint8_t
+    {
+        _render_pipeline_type_mesh_gbuffer = 0,
+        _render_pipeline_type_count
+    };
+
+    struct MainCameraPassInitInfo : RenderPassInitInfo {};
 
     class MainCameraPass : public RenderPass
     {

@@ -31,7 +31,7 @@ namespace Galaxy
 
         void InitializeUIRenderBackend(GUIBackend* guiBackend);
 
-        virtual void ForwardRender(Ref<RHI> rhi);
+        virtual void ForwardRender();
 
     protected:
         Ref<RHI> m_RHI;

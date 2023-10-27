@@ -13,5 +13,5 @@ namespace Galaxy
         m_GUIPass->InitializeUIRenderBackend(guiBackend);
     }
 
-    void RenderPipelineBase::ForwardRender(Ref<RHI> rhi) {}
+    void RenderPipelineBase::ForwardRender() {}
 } // namespace Galaxy

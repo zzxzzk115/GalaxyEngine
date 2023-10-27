@@ -10,7 +10,6 @@ set(BUILD_SHARED_LIBS OFF)
 
 include(CMakeDependentOption)
 include(CMake/WSL.cmake)
-include(CMake/ShaderCompile.cmake)
 
 # Include guards
 if (PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)

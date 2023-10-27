@@ -19,6 +19,7 @@ namespace Galaxy
 
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
     {
+        // Start systems
         RuntimeGlobalContextInitInfo runtimeGlobalContextInitInfo = {};
         runtimeGlobalContextInitInfo.AppName = specification.Name;
         g_RuntimeGlobalContext.StartSystems(runtimeGlobalContextInitInfo);
@@ -39,13 +40,12 @@ namespace Galaxy
 
         g_RuntimeGlobalContext.WindowSys->SetEventCallback(GAL_BIND_EVENT_FN(Application::OnEvent));
 
-        // FIXME: fix framebuffer creation and uncomment following lines
-//        // Create and Init GUI backend
-//        auto imGuiBackend = new ImGuiBackend();
-//        GUIBackendInitInfo guiBackendInitInfo = {};
-//        guiBackendInitInfo.WindowSys = g_RuntimeGlobalContext.WindowSys;
-//        guiBackendInitInfo.RenderSys = g_RuntimeGlobalContext.RenderSys;
-//        imGuiBackend->Initialize(guiBackendInitInfo);
+        // Create and Init GUI backend
+        auto* imGuiBackend = new ImGuiBackend();
+        GUIBackendInitInfo guiBackendInitInfo = {};
+        guiBackendInitInfo.WindowSys = g_RuntimeGlobalContext.WindowSys;
+        guiBackendInitInfo.RenderSys = g_RuntimeGlobalContext.RenderSys;
+        imGuiBackend->Initialize(guiBackendInitInfo);
 
         GAL_CORE_INFO("[Application] Initiated");
     }

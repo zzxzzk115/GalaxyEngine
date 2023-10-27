@@ -6,15 +6,21 @@
 
 #include "GalaxyEngine/Function/GUI/ImGuiBackend.h"
 #include "GalaxyEngine/Core/WindowSystem.h"
+#include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanRHI.h"
 #include "GalaxyEngine/Function/Renderer/RenderSystem.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_vulkan.h>
+
 namespace Galaxy
 {
     void ImGuiBackend::Initialize(GUIBackendInitInfo initInfo)
     {
+        m_RHI = initInfo.RenderSys->GetRHI();
+
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -75,10 +81,50 @@ namespace Galaxy
         initInfo.RenderSys->InitializeUIRenderBackend(this);
     }
 
+    void ImGuiBackend::SetupRenderingConfig(GUIBackendRenderingConfig config)
+    {
+        ImGui_ImplGlfw_InitForVulkan(std::static_pointer_cast<VulkanRHI>(m_RHI)->Window, true);
+        ImGui_ImplVulkan_InitInfo initInfo = {};
+        initInfo.Instance                  = std::static_pointer_cast<VulkanRHI>(m_RHI)->Instance;
+        initInfo.PhysicalDevice            = std::static_pointer_cast<VulkanRHI>(m_RHI)->PhysicalDevice;
+        initInfo.Device                    = std::static_pointer_cast<VulkanRHI>(m_RHI)->Device;
+        initInfo.QueueFamily               = m_RHI->GetQueueFamilyIndices().graphicsFamily.value();
+        initInfo.Queue                     = ((VulkanQueue*)m_RHI->GetGraphicsQueue())->GetResource();
+        initInfo.DescriptorPool            = std::static_pointer_cast<VulkanRHI>(m_RHI)->GlobalVkDescriptorPool;
+        initInfo.Subpass                   = config.GUIPassIndex;
+
+        // may be different from the real swapchain image count
+        // see ImGui_ImplVulkanH_GetMinImageCountFromPresentMode
+        initInfo.MinImageCount = 3;
+        initInfo.ImageCount    = 3;
+        ImGui_ImplVulkan_Init(&initInfo, ((VulkanRenderPass*)config.GUIRenderPass)->GetResource());
+
+        UploadFonts();
+    }
+
+    void ImGuiBackend::Begin()
+    {
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+
     void ImGuiBackend::PreRender()
     {
         // TODO: Remove, Test only!
         ImGui::ShowDemoWindow();
+    }
+
+    void ImGuiBackend::End()
+    {
+        float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        m_RHI->PushEvent(m_RHI->GetCurrentCommandBuffer(), "ImGUI", color);
+
+        ImGui::Render();
+
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), std::static_pointer_cast<VulkanRHI>(m_RHI)->VkCurrentCommandBuffer);
+
+        m_RHI->PopEvent(m_RHI->GetCurrentCommandBuffer());
     }
 
     void ImGuiBackend::SetDarkThemeColors()
@@ -140,5 +186,48 @@ namespace Galaxy
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    }
+
+    void ImGuiBackend::UploadFonts()
+    {
+        RHICommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType                       = RHI_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level                       = RHI_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool                 = m_RHI->GetCommandPool();
+        allocInfo.commandBufferCount          = 1;
+
+        RHICommandBuffer* commandBuffer = new VulkanCommandBuffer();
+        if (RHI_SUCCESS != m_RHI->AllocateCommandBuffers(&allocInfo, commandBuffer))
+        {
+            throw std::runtime_error("failed to allocate command buffers!");
+        }
+
+        RHICommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType                    = RHI_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags                    = RHI_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        if (RHI_SUCCESS != m_RHI->BeginCommandBuffer(commandBuffer, &beginInfo))
+        {
+            throw std::runtime_error("Could not create one-time command buffer!");
+        }
+
+        ImGui_ImplVulkan_CreateFontsTexture(((VulkanCommandBuffer*)commandBuffer)->GetResource());
+
+        if (RHI_SUCCESS != m_RHI->EndCommandBuffer(commandBuffer))
+        {
+            throw std::runtime_error("failed to record command buffer!");
+        }
+
+        RHISubmitInfo submitInfo {};
+        submitInfo.sType              = RHI_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers    = &commandBuffer;
+
+        m_RHI->QueueSubmit(m_RHI->GetGraphicsQueue(), 1, &submitInfo, RHI_NULL_HANDLE);
+        m_RHI->QueueWaitIdle(m_RHI->GetGraphicsQueue());
+
+        m_RHI->FreeCommandBuffers(m_RHI->GetCommandPool(), 1, commandBuffer);
+
+        ImGui_ImplVulkan_DestroyFontUploadObjects();
     }
 } // namespace Galaxy

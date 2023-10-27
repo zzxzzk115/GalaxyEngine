@@ -31,6 +31,11 @@ target_link_libraries(${TARGET_NAME} PUBLIC imgui)
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog)
 target_link_libraries(${TARGET_NAME} PUBLIC GPUOpen::VulkanMemoryAllocator)
 
+add_dependencies(${TARGET_NAME} ${SHADER_COMPILE_TARGET})
+target_include_directories(
+        ${TARGET_NAME}
+        PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/Shaders/_generated/cpp>)
+
 target_include_directories(
         ${TARGET_NAME}
         PUBLIC ${Vulkan_INCLUDE_DIRS}

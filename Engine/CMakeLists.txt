@@ -1,7 +1,7 @@
-set(GALAXY_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(ENGINE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(THIRD_PARTY_DIR "${GALAXY_SOURCE_DIR}/ThirdParty")
-set(ENGINE_SRC_DIR "${GALAXY_SOURCE_DIR}/Source")
+set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/ThirdParty")
+set(ENGINE_SRC_DIR "${ENGINE_ROOT_DIR}/Source")
 
 set(GLFW_INCLUDE_DIR "${THIRD_PARTY_DIR}/glfw/include")
 set(IMGUI_INCLUDE_DIR "${THIRD_PARTY_DIR}/imgui")
@@ -13,8 +13,10 @@ endif()
 
 find_package(Vulkan REQUIRED)
 
-message("Compiling Shaders...")
-CompileShaders("${CMAKE_CURRENT_SOURCE_DIR}/Resources/Shaders" "${CMAKE_CURRENT_SOURCE_DIR}/Resources/Shaders/spv")
+# Compile Shader
+set(glslangValidator_executable glslangValidator)
+set(SHADER_COMPILE_TARGET GalaxyShaderCompile)
+add_subdirectory(Shaders)
 
 add_subdirectory(ThirdParty)
 add_subdirectory(Source/Runtime)

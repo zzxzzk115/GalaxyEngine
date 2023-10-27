@@ -1,0 +1,1 @@
+#define MAX_POINT_LIGHT_COUNT 15

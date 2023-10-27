@@ -23,9 +23,6 @@ namespace Galaxy
         void Draw() override final;
 
     private:
-        void UploadFonts();
-
-    private:
         GUIBackend* m_GUIBackend;
     };
 } // namespace Galaxy

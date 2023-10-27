@@ -30,7 +30,7 @@ namespace Galaxy
 
     void VulkanRenderSystem::Update(float deltaTime)
     {
-        
+        m_RenderPipeline->ForwardRender();
     }
 
     void VulkanRenderSystem::Release()

@@ -32,9 +32,9 @@ namespace Galaxy
         m_GUIPass->Initialize(&guiInitInfo);
     }
 
-    void BuiltinRenderPipeline::ForwardRender(Ref<RHI> rhi)
+    void BuiltinRenderPipeline::ForwardRender()
     {
-        VulkanRHI*      vulkanRhi      = static_cast<VulkanRHI*>(rhi.get());
+        VulkanRHI*      vulkanRhi      = static_cast<VulkanRHI*>(m_RHI.get());
 
         vulkanRhi->WaitForFences();
 
@@ -48,6 +48,10 @@ namespace Galaxy
         }
 
         GUIPass&           guiPass            = *(static_cast<GUIPass*>(m_GUIPass.get()));
+
+        // draw forward
+        MainCameraPass&    mainCameraPass     = *(static_cast<MainCameraPass*>(m_MainCameraPass.get()));
+        mainCameraPass.DrawForward(guiPass, vulkanRhi->CurrentSwapchainImageIndex);
 
         vulkanRhi->SubmitRendering(std::bind(&BuiltinRenderPipeline::PassUpdateAfterRecreateSwapchain, this));
     }

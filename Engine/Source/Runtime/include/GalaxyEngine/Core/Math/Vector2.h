@@ -62,7 +62,7 @@ namespace Galaxy::Math
 
         inline float GetLength() const
         {
-            return std::sqrt(X * X + Y * Y);
+            return std::hypot(X, Y);
         }
 
         inline Vector2 Normalized() const
@@ -88,4 +88,4 @@ namespace Galaxy::Math
         const static Vector2 Zero;
         const static Vector2 One;
     };
-} // namespace Galaxy
+} // namespace Galaxy::Math

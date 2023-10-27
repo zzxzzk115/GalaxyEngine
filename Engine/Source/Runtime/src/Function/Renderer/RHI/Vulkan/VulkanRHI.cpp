@@ -3221,7 +3221,7 @@ namespace Galaxy
         }
     }
 
-    void VulkanRHI::PushEvent(RHICommandBuffer* commondBuffer, const char* name, const float* color)
+    void VulkanRHI::PushEvent(RHICommandBuffer* commandBuffer, const char* name, const float* color)
     {
         if (m_EnableDebugUtilsLabel)
         {
@@ -3231,15 +3231,15 @@ namespace Galaxy
             labelInfo.pLabelName = name;
             for (int i = 0; i < 4; ++i)
                 labelInfo.color[i] = color[i];
-            _vkCmdBeginDebugUtilsLabelEXT(((VulkanCommandBuffer*)commondBuffer)->GetResource(), &labelInfo);
+            _vkCmdBeginDebugUtilsLabelEXT(((VulkanCommandBuffer*)commandBuffer)->GetResource(), &labelInfo);
         }
     }
 
-    void VulkanRHI::PopEvent(RHICommandBuffer* commondBuffer)
+    void VulkanRHI::PopEvent(RHICommandBuffer* commandBuffer)
     {
         if (m_EnableDebugUtilsLabel)
         {
-            _vkCmdEndDebugUtilsLabelEXT(((VulkanCommandBuffer*)commondBuffer)->GetResource());
+            _vkCmdEndDebugUtilsLabelEXT(((VulkanCommandBuffer*)commandBuffer)->GetResource());
         }
     }
     bool VulkanRHI::IsPointLightShadowEnabled(){ return m_EnablePointLightShadow; }

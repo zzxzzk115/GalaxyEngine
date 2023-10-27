@@ -146,8 +146,8 @@ namespace Galaxy
         void            EndSingleTimeCommands(RHICommandBuffer* commandBuffer) override;
         bool PrepareBeforePass(std::function<void()> passUpdateAfterRecreateSwapchain) override;
         void SubmitRendering(std::function<void()> passUpdateAfterRecreateSwapchain) override;
-        void PushEvent(RHICommandBuffer* commondBuffer, const char* name, const float* color) override;
-        void PopEvent(RHICommandBuffer* commondBuffer) override;
+        void PushEvent(RHICommandBuffer* commandBuffer, const char* name, const float* color) override;
+        void PopEvent(RHICommandBuffer* commandBuffer) override;
 
         // destory
         virtual ~VulkanRHI() override final;

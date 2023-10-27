@@ -1,23 +1,20 @@
 #version 450
-#extension GL_ARB_separate_shader_objects : enable
 
 layout(location = 0) in vec3 inPosition; // Vertex position
 layout(location = 1) in vec3 inNormal;   // Vertex normal
 layout(location = 2) in vec2 inTexCoord; // Texture coordinates
 
-out gl_PerVertex {
-    vec4 gl_Position;
+layout(location = 0) out vec3 fragPosition; // Vertex position passed to the fragment shader
+layout(location = 1) out vec3 fragNormal;   // Vertex normal passed to the fragment shader
+layout(location = 2) out vec2 fragTexCoord; // Texture coordinates passed to the fragment shader
+
+layout(location = 3) out vec4 outColor; // Output color
+
+layout(set = 0, binding = 0) buffer Matrices {
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 };
-
-out vec3 fragPosition; // Position information needed for the fragment shader
-out vec3 fragNormal;   // Normal information needed for the fragment shader
-out vec2 fragTexCoord; // Texture coordinates needed for the fragment shader
-
-layout(location = 0) out vec4 outColor; // Output color
-
-uniform mat4 model;      // Model matrix
-uniform mat4 view;       // View matrix
-uniform mat4 projection; // Projection matrix
 
 void main() 
 {
