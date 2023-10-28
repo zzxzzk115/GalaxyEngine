@@ -14,6 +14,7 @@ namespace Galaxy
     enum LayoutType : uint8_t
     {
         _per_mesh = 0,
+        _mesh_global,
         _layout_type_count
     };
 
@@ -41,6 +42,8 @@ namespace Galaxy
         void SetupDescriptorSet();
         void SetupFramebufferDescriptorSet();
         void SetupSwapchainFramebuffers();
+
+        void SetupModelDescriptorSet();
 
     private:
         std::vector<RHIFramebuffer*> m_SwapchainFramebuffers;

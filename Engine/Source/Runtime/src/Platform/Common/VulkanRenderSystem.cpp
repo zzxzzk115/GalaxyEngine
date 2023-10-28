@@ -5,10 +5,11 @@
 //
 
 #include "GalaxyEngine/Platform/Common/VulkanRenderSystem.h"
+#include "GalaxyEngine/Function/GUI/GUIBackend.h"
 #include "GalaxyEngine/Function/Renderer/Pipeline/BuiltinRenderPipeline.h"
 #include "GalaxyEngine/Function/Renderer/Pipeline/RenderPipelineBase.h"
 #include "GalaxyEngine/Function/Renderer/RHI/Vulkan/VulkanRHI.h"
-#include "GalaxyEngine/Function/GUI/GUIBackend.h"
+#include "GalaxyEngine/Function/Renderer/Resource/RenderResource.h"
 
 namespace Galaxy
 {
@@ -22,6 +23,11 @@ namespace Galaxy
 
         // 2. Init Render Pipeline
         RenderPipelineInitInfo pipelineInitInfo;
+
+        m_RenderResource = CreateRef<RenderResource>();
+        m_RenderResource->UploadGlobalRenderResource(m_RHI);
+
+        pipelineInitInfo.RenderResource = m_RenderResource;
 
         m_RenderPipeline        = CreateRef<BuiltinRenderPipeline>();
         m_RenderPipeline->m_RHI = m_RHI;

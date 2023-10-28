@@ -6,6 +6,7 @@
 
 #include "GalaxyEngine/Function/Renderer/Pass/MainCameraPass.h"
 #include "GalaxyEngine/Function/Renderer/RenderMesh.h"
+#include "GalaxyEngine/Function/Renderer/Resource/RenderResource.h"
 
 #include "standard_frag.h"
 #include "standard_vert.h"
@@ -390,9 +391,55 @@ namespace Galaxy
         }
     }
 
-    void MainCameraPass::SetupDescriptorSet() {}
+    void MainCameraPass::SetupDescriptorSet()
+    {
+        SetupModelDescriptorSet();
+    }
 
-    void MainCameraPass::SetupFramebufferDescriptorSet() {}
+    void MainCameraPass::SetupFramebufferDescriptorSet()
+    {
 
-    void MainCameraPass::SetupSwapchainFramebuffers() {}
+    }
+
+    void MainCameraPass::SetupSwapchainFramebuffers()
+    {
+
+    }
+
+    void MainCameraPass::SetupModelDescriptorSet()
+    {
+        // update common model's global descriptor set
+        RHIDescriptorSetAllocateInfo meshGlobalDescriptorSetAllocInfo;
+        meshGlobalDescriptorSetAllocInfo.sType              = RHI_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        meshGlobalDescriptorSetAllocInfo.pNext              = nullptr;
+        meshGlobalDescriptorSetAllocInfo.descriptorPool     = m_RHI->GetDescriptorPool();
+        meshGlobalDescriptorSetAllocInfo.descriptorSetCount = 1;
+        meshGlobalDescriptorSetAllocInfo.pSetLayouts        = &DescriptorInfos[_per_mesh].Layout;
+
+        if (RHI_SUCCESS != m_RHI->AllocateDescriptorSets(&meshGlobalDescriptorSetAllocInfo, DescriptorInfos[_per_mesh].DescriptorSet))
+        {
+            throw std::runtime_error("[MainCameraPass] Failed to allocate mesh global descriptor set!");
+        }
+
+        RHIDescriptorBufferInfo meshBufferInfo = {};
+        meshBufferInfo.offset = 0;
+        meshBufferInfo.range  = sizeof(MeshPerFrameStorageBufferObject);
+        meshBufferInfo.buffer = GlobalRenderRes->Buffer.GlobalUploadRingBuffer;
+
+        RHIWriteDescriptorSet meshDescriptorWritesInfo[1];
+
+        meshDescriptorWritesInfo[0].sType           = RHI_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        meshDescriptorWritesInfo[0].pNext           = nullptr;
+        meshDescriptorWritesInfo[0].dstSet          = DescriptorInfos[_per_mesh].DescriptorSet;
+        meshDescriptorWritesInfo[0].dstBinding      = 0;
+        meshDescriptorWritesInfo[0].dstArrayElement = 0;
+        meshDescriptorWritesInfo[0].descriptorType  = RHI_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+        meshDescriptorWritesInfo[0].descriptorCount = 1;
+        meshDescriptorWritesInfo[0].pBufferInfo     = &meshBufferInfo;
+
+        m_RHI->UpdateDescriptorSets(sizeof(meshDescriptorWritesInfo) / sizeof(meshDescriptorWritesInfo[0]),
+                                    meshDescriptorWritesInfo,
+                                    0,
+                                    nullptr);
+    }
 } // namespace Galaxy

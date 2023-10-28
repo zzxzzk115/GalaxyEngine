@@ -10,9 +10,6 @@
 
 namespace Galaxy
 {
-    class RHI;
-    class RenderPipelineBase;
-
     class VulkanRenderSystem : public RenderSystem
     {
     public:
@@ -24,9 +21,5 @@ namespace Galaxy
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
         void InitializeUIRenderBackend(GUIBackend* guiBackend) override;
-
-    private:
-        Ref<RHI> m_RHI;
-        Ref<RenderPipelineBase> m_RenderPipeline;
     };
 } // namespace Galaxy

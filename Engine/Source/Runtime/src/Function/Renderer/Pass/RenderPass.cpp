@@ -8,7 +8,11 @@
 
 namespace Galaxy
 {
-    void RenderPass::Initialize(const RenderPassInitInfo* initInfo) {}
+    void RenderPass::Initialize(const RenderPassInitInfo* initInfo)
+    {
+        GlobalRenderRes =
+            &(std::static_pointer_cast<RenderResource>(m_RenderResource)->GlobalRenderRes);
+    }
 
     void RenderPass::Draw() {}
 

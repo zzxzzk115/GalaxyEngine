@@ -13,6 +13,7 @@ namespace Galaxy
     void RenderPassBase::SetCommonInfo(RenderPassCommonInfo commonInfo)
     {
         m_RHI = commonInfo.RHI;
+        m_RenderResource = commonInfo.RenderResource;
     }
 
     void RenderPassBase::InitializeUIRenderBackend(GUIBackend* guiBackend) {}

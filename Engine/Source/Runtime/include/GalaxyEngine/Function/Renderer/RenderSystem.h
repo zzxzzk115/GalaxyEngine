@@ -11,7 +11,10 @@
 
 namespace Galaxy
 {
+    class RHI;
+    class RenderPipelineBase;
     class WindowSystem;
+    class RenderResourceBase;
     class GUIBackend;
 
     struct RenderSystemInitInfo
@@ -29,5 +32,10 @@ namespace Galaxy
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual void InitializeUIRenderBackend(GUIBackend* guiBackend) = 0;
+
+    protected:
+        Ref<RHI>                m_RHI;
+        Ref<RenderPipelineBase> m_RenderPipeline;
+        Ref<RenderResourceBase> m_RenderResource;
     };
 } // namespace Galaxy

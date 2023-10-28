@@ -11,13 +11,14 @@
 
 namespace Galaxy
 {
-    void BuiltinRenderPipeline::Initialize(RenderPipelineInitInfo  /*initInfo*/)
+    void BuiltinRenderPipeline::Initialize(RenderPipelineInitInfo  initInfo)
     {
         m_MainCameraPass = CreateRef<MainCameraPass>();
         m_GUIPass = CreateRef<GUIPass>();
 
         RenderPassCommonInfo passCommonInfo;
         passCommonInfo.RHI = m_RHI;
+        passCommonInfo.RenderResource = initInfo.RenderResource;
 
         m_MainCameraPass->SetCommonInfo(passCommonInfo);
         m_GUIPass->SetCommonInfo(passCommonInfo);

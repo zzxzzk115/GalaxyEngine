@@ -7,6 +7,7 @@
 #pragma once
 
 #include "GalaxyEngine/Function/Renderer/Pass/RenderPassBase.h"
+#include "GalaxyEngine/Function/Renderer/Resource/RenderResource.h"
 
 namespace Galaxy
 {
@@ -59,6 +60,8 @@ namespace Galaxy
             RHIPipelineLayout* Layout;
             RHIPipeline*       Pipeline;
         };
+
+        GlobalRenderResource*           GlobalRenderRes {nullptr};
 
         std::vector<Descriptor>         DescriptorInfos;
         std::vector<RenderPipelineBase> RenderPipelines;

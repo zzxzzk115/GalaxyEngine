@@ -15,9 +15,13 @@ using namespace Galaxy::Math;
 namespace Galaxy
 {
     class RHI;
+    class RenderResourceBase;
     class GUIBackend;
 
-    struct RenderPipelineInitInfo {};
+    struct RenderPipelineInitInfo
+    {
+        Ref<RenderResourceBase> RenderResource;
+    };
 
     class RenderPipelineBase
     {

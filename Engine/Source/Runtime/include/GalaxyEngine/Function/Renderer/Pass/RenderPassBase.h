@@ -11,6 +11,7 @@
 namespace Galaxy
 {
     class RHI;
+    class RenderResourceBase;
     class GUIBackend;
 
     struct RenderPassInitInfo
@@ -19,6 +20,7 @@ namespace Galaxy
     struct RenderPassCommonInfo
     {
         Ref<RHI>                RHI;
+        Ref<RenderResourceBase> RenderResource;
     };
 
     class RenderPassBase
@@ -30,6 +32,7 @@ namespace Galaxy
         virtual void InitializeUIRenderBackend(GUIBackend* guiBackend);
 
     protected:
-        Ref<RHI>                 m_RHI;
+        Ref<RHI>                m_RHI;
+        Ref<RenderResourceBase> m_RenderResource;
     };
 } // namespace Galaxy
